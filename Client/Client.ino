@@ -1,22 +1,20 @@
-// Defining pins
-const int stepPins[] = {1, 1, 1, 1, 1, 1}; // Step pins for for motors Down, Front, Back, Right, Left and Mover
-const int dirPins[]  = {1, 1, 1, 1, 1, 1}; //Direction pins for motors Down, Front, Back, Right, Left and Mover
-const int enPins[]   = {1, 1, 1, 1, 1, 1}; //Ready pins for motors Down, Front, Back, Right, Left and Mover
-
 // Unchangeable variables
-const int micStep = 16;
-const long oneMove = micStep*20;
+const int pulsesPerRotation = 200;
 
 // Include step-motor library
-#include <AccelStepper.h>
+struct Stepper {
+  int stepPin;
+  int dirPin;
+  int enPin;
+}
 
 // Setup the steppers
-AccelStepper DownStepper(AccelStepper::DRIVER, stepPins[0], dirPins[0]);
-AccelStepper FrontStepper(AccelStepper::DRIVER, stepPins[1], dirPins[1]);
-AccelStepper BackStepper(AccelStepper::DRIVER, stepPins[2], dirPins[2]);
-AccelStepper RightStepper(AccelStepper::DRIVER, stepPins[3], dirPins[3]);
-AccelStepper LeftStepper(AccelStepper::DRIVER, stepPins[4], dirPins[4]);
-AccelStepper MoveStepper(AccelStepper::DRIVER, stepPins[5], dirPins[5]);
+Stepper DownStepper = {6, 7, 8};
+Stepper FrontStepper = {6, 7, 8};
+Stepper BackStepper = {6, 7, 8};
+Stepper RightStepper = {6, 7, 8};
+Stepper LeftStepper = {6, 7, 8};
+Stepper MoveStepper = {6, 7, 8};
 
 void setup() {
   // Setup the serial port, and set the data rate to 9600 bps (for serial monitor)

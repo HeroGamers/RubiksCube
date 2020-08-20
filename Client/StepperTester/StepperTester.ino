@@ -1,6 +1,6 @@
-const int button_Pin = 5;
-const int stepper_stepPin = 9;
-const int stepper_dirPin = 10;
+const int button_Pin = 2;
+const int stepper_stepPin = 6;
+const int stepper_dirPin = 7;
 
 int buttonState = 0;
 
@@ -32,11 +32,14 @@ void loop() {
 
   if (buttonState == HIGH) {
     motor.moveTo(maxRotations);
+    Serial.println("AAAAAAAAA");
+    delay(1000);
   }
   else {
     //Serial.print("Button was let go! Stopping the motor at pos: ");
     //Serial.println(motor.currentPosition());
     //motor.stop();
     //motor.runToPosition();
+    Serial.println("no");
   }
 }
