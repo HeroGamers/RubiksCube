@@ -3,16 +3,16 @@ const int pulsesPerRotation = 200; // 360 degrees
 const int pulseDelay = 450; // The delay between HIGH and LOW, in microseconds
 const int moveDelay = 2000; // The delay between each move, in milliseconds
 
-// Changeable variables
-Stepper motor; // The stepper that will be used for the moves
-boolean found; // Whether a stepper was found or not
-
-// Include step-motor library
+// Structs
 struct Stepper {
   int stepPin;
   int dirPin;
   int enPin;
 };
+
+// Changeable variables
+Stepper motor; // The stepper that will be used for the moves
+boolean found; // Whether a stepper was found or not
 
 // Setup the steppers
 Stepper DownStepper = {1, 2, 3};
@@ -26,15 +26,17 @@ Stepper MoveStepper = {17, 18, 19};
 #include <ArduinoWebsockets.h>
 #include <ESP8266WiFi.h>
 
-const char* ssid = "ssid"; // WiFi SSID
-const char* password = "password"; // WiFi Password
-const char* websockets_server = "www.myserver.com:8080"; //server adress and port
+const char* ssid = "Yeet"; // WiFi SSID
+const char* password = "HvadMedNej?"; // WiFi Password
+const char* websockets_server = "ws://play.nfs.codes:8080"; //server adress and port
 
 using namespace websockets;
 
 void onMessageCallback(WebsocketsMessage message) {
     Serial.print("Got Message: ");
     Serial.println(message.data());
+
+    
 }
 
 void onEventsCallback(WebsocketsEvent event, String data) {
@@ -81,7 +83,7 @@ void setup() {
   pinMode(MoveStepper.enPin, OUTPUT);
 
   // Setup the WebSocket Client
-  Wifi.begin(ssid, password); // Connect to WiFi
+  WiFi.begin(ssid, password); // Connect to WiFi
 
   // Wait some time to connect to wifi
   for(int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++) {
