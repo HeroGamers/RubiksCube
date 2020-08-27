@@ -20,10 +20,11 @@ Stepper FrontStepper = {4, 5, 6};
 Stepper BackStepper = {7, 8, 9};
 Stepper RightStepper = {10, 11, 12};
 Stepper LeftStepper = {14, 15, 16};
-Stepper MoveStepper = {17, 18, 19};
+Stepper MoveStepper = {17, 20, 21};
 
-// Setup Websockets
+// Import libraries for the ESP module and websockets
 #include <WiFiEsp.h>
+#include <ArduinoHttpClient.h>
 
 // Emulate Serial1 on pins 6/7 if not present
 #ifndef HAVE_HWSERIAL1
@@ -31,15 +32,18 @@ Stepper MoveStepper = {17, 18, 19};
 SoftwareSerial Serial1(19, 18); // RX1, TX1
 #endif
 
-const char ssid = "Yeet"; // WiFi SSID
-const char password = "HvadMedNej?"; // WiFi Password
-const char websockets_server = "ws://play.nfs.codes:8080"; // server adress and port
-int status = WL_IDLE_STATUS;     // the Wifi radio's status
+// Sensitive data is put into here - variables are NW_SSID, NW_PASS, WS_PORT and WS_ADDRESS
+#include "secrets.h"
 
-char server[] = "arduino.cc";
+const char ssid[] = NW_SSID; // WiFi SSID
+const char password[] = NW_PASS; // WiFi Password
+const char websocket_address[] = WS_ADDRESS; // WS Address
+const int websocket_port = WS_PORT; // WS Port
+int status = WL_IDLE_STATUS; // the current WiFi Status
 
-// Client object
-WiFiEspClient client;
+// Client objects
+WiFiEspClient WifiClient;
+WebSocketClient client = WebSocketClient(WifiClient, websocket_address, websocket_port);
 
 void logMessage(String message) {
   Serial.println(message);
@@ -47,10 +51,10 @@ void logMessage(String message) {
 }
 
 void setup() {
-  // Setup the serial port, and set the data rate to 115200 bps (for serial monitor)
-  Serial.begin(115200);
+  // Setup the serial port, and set the data rate to 9600 bps (for serial monitor)
+  Serial.begin(9600);
   // initialize serial for ESP module
-  Serial1.begin(9600);
+  Serial1.begin(115200);
 
   // Setup all the steppers' pins as output
   pinMode(DownStepper.stepPin, OUTPUT);
@@ -72,7 +76,7 @@ void setup() {
   pinMode(MoveStepper.dirPin, OUTPUT);
   pinMode(MoveStepper.enPin, OUTPUT);
 
-  // Setup the WebSocket Client
+  // Setup the WiFi Client
   WiFi.init(&Serial1);
   WiFi.begin(ssid, password); // Connect to WiFi
 
@@ -91,26 +95,33 @@ void setup() {
     status = WiFi.begin(ssid, password);
   }
 
-  // you're connected now, so print out the data
+  // we're connected now, so print out the data
   Serial.println("You're connected to the network");
   
   printWifiStatus();
 
   Serial.println();
-  Serial.println("Starting connection to server...");
-  // if you get a connection, report back via serial
-  if (client.connect(server, 80)) {
-    Serial.println("Connected to server");
-    // Make a HTTP request
-    client.println("GET /asciilogo.txt HTTP/1.1");
-    client.println("Host: arduino.cc");
-    client.println("Connection: close");
-    client.println();
-  }
 
-  client.println("Startup done, waiting 500ms!");
   Serial.println("Startup done, waiting 500 ms!");
   delay(500);
+}
+
+void printWifiStatus()
+{
+  // print the SSID of the network you're attached to
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+
+  // print your WiFi shield's IP address
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+
+  // print the received signal strength
+  long rssi = WiFi.RSSI();
+  Serial.print("Signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
 }
 
 void doRotation(Stepper motor, int degrees) {
@@ -167,39 +178,29 @@ void move(String notation) {
 
 void loop()
 {
-  // if there are incoming bytes available
-  // from the server, read them and print them
-  while (client.available()) {
-    char c = client.read();
-    Serial.write(c);
+  Serial.println("Starting WebSocket client");
+  client.begin();
+
+  while (client.connected()) {
+    Serial.println("Sending hello");
+
+    // send a hello #
+    client.beginMessage(TYPE_TEXT);
+    client.print("hello");
+    client.endMessage();
+
+    // check if a message is available to be received
+    int messageSize = client.parseMessage();
+
+    if (messageSize > 0) {
+      Serial.println("Received a message:");
+      Serial.println(client.readString());
+    }
+
+    // wait 5 seconds
+    delay(5000);
   }
 
-  // if the server's disconnected, stop the client
-  if (!client.connected()) {
-    Serial.println();
-    Serial.println("Disconnecting from server...");
-    client.stop();
-
-    // do nothing forevermore
-    while (true);
-  }
-}
-
-
-void printWifiStatus()
-{
-  // print the SSID of the network you're attached to
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-
-  // print your WiFi shield's IP address
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-
-  // print the received signal strength
-  long rssi = WiFi.RSSI();
-  Serial.print("Signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
+  Serial.println("Disconnected from the WebSocket Client, waiting 3 seconds...");
+  delay(3000);
 }
