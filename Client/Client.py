@@ -1,11 +1,17 @@
 from gpiozero import DigitalOutputDevice
 from time import sleep
+import asyncio
+import websockets
 
 # Unchangeable variables
 pulsesPerRotation = 200  # 360 degrees
 pulseDelay = 450  # The delay between HIGH and LOW, in microseconds
 moveDelay = 2000  # The delay between each move, in milliseconds
 moveStepperDegrees = 360  # The amount of degrees the move stepper should move to fit/unfit
+
+# Changeable variables
+stop = False
+running = False
 
 
 class Stepper:
@@ -118,4 +124,21 @@ def run(moves):
     MoveStepper.move(moveStepperDegrees)
     print("Done moving the move stepper, feel free to pull out cube!")
 
+
+async def websocketlistener():
+    print("Starting listener...")
+    uri = "ws://play.nfs.codes:8080"
+    async with websockets.connect(uri) as websocket:
+        res = await websocket.recv()
+        if res:
+            if "stop" in res:
+                global stop
+                stop = True
+            else:
+                print("Moves received - " + res)
+                print("Running...")
+                run(res)
+
+# Start the Websocket Listener
+asyncio.get_event_loop().run_until_complete(websocketlistener())
 
