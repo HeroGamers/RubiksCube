@@ -103,6 +103,12 @@ def do_move(notation):
 
 # The run function
 def run(moves):
+    global stop
+    global running
+
+    # Change running variable to True
+    running = True
+
     # Move the move stepper to the correct position...
     print("Moving move stepper...")
     MoveStepper.set_direction("RIGHT")
@@ -114,15 +120,21 @@ def run(moves):
 
     print("Doing moves...")
     for move in moves:
-        status = do_move(move)
-        if not status:
-            print("Move didn't complete...")
+        if not stop:  # If stop is not true
+            status = do_move(move)
+            if not status:
+                print("Move didn't complete...")
     print("Done with the moves!")
 
     print("Moving the move stepper... Please wait...")
     MoveStepper.set_direction("LEFT")
     MoveStepper.move(moveStepperDegrees)
     print("Done moving the move stepper, feel free to pull out cube!")
+
+    # Set running variable to False
+    running = False
+    # Be sure that stop is set to False, if it has been stopped
+    stop = False
 
 
 async def websocketlistener():
@@ -135,9 +147,12 @@ async def websocketlistener():
                 global stop
                 stop = True
             else:
-                print("Moves received - " + res)
-                print("Running...")
-                run(res)
+                if not running:
+                    print("Moves received - " + res)
+                    print("Running...")
+                    run(res)
+                else:
+                    print("Cannot do moves when running...")
 
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
