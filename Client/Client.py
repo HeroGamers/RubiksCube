@@ -4,7 +4,9 @@ import asyncio
 import websockets
 
 # Unchangeable variables
-pulsesPerRotation = 200  # 360 degrees
+stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
+microSteps = 1  # The amount of microsteps the stepper takes
+pulsesPerRotation = 360/stepAngle*microSteps  # 360 degrees
 pulseDelay = 450  # The delay between HIGH and LOW, in microseconds
 moveDelay = 2000  # The delay between each move, in milliseconds
 moveStepperDegrees = 360  # The amount of degrees the move stepper should move to fit/unfit
