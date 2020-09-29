@@ -3,6 +3,11 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 const cube = new Cube();
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({
+	port: 8080
+});
+
 //cube.move("R2 U' R2 D' B2 U2 R2 U' F2 U2 R2 U2 F' U L D2 U L D B L' U2")
 //cube.move("F' R B")
 cube.randomize()
@@ -27,7 +32,7 @@ function Solve() {
 	EdgeSwap()
 }
 
-function Scramble(){
+function Scramble() {
 	solution = ""
 	cube.randomize()
 	io.emit("cubeState", cube.asString())
@@ -145,7 +150,28 @@ io.on('connection', (socket) => {
 	socket.on("Scramble", () => {
 		Scramble()
 	})
+	socket.on("Stop", () => {
+		send("Stop", "Stop")
+	})
 });
+
+wss.on('connection', function connection(ws) {
+	ws.on('message', function incoming(message) {
+		ws.send(message);
+	});
+
+});
+
+function send(messagecode, message) {
+	wss.clients.forEach(function each(client) {
+		if (client.readyState === WebSocket.OPEN) {
+			// var = wssolution={};
+			// wssolution[messagecode]=message;
+			// client.send(wssolution)
+			client.send(JSON.stringify({"messagecode": messagecode, "data": message}))
+		}
+	});
+}
 
 http.listen(80, () => {});
 
@@ -221,15 +247,16 @@ function CornerSwap() {
 			solution = solution + SetupMove + alg + Cube.inverse(SetupMove) + " "
 			CornerSwap()
 		} else {
-			solution=solution.replace(/  /g, " ")
-			solution=solution.slice(0, solution.length-1)
+			solution = solution.replace(/  /g, " ")
+			solution = solution.slice(0, solution.length - 1)
 			cube.move(Cube.inverse(solution))
 			io.emit("cubeState", cube.asString())
 			io.emit("Done", solution)
+			send("SolveMoves",solution)
 			console.log(solution)
 			console.timeEnd("SolveCalcTime")
 			console.log(solution.split(" ").length)
-			
+
 			// results.push(solution.split(" ").length)
 			// var sum = 0
 			// for (var i = 0; i < results.length; i++) {
