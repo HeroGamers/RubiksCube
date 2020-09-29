@@ -163,7 +163,10 @@ async def websocketlistener():
                                 moves = res_json['data']
                                 print("Moves received - " + moves)
                                 print("Running...")
-                                run(moves)
+                                try:
+                                    run(moves)
+                                except Exception as e:
+                                    print("Error while doing moves! - " + str(e))
                             else:
                                 print("Cannot do moves when running!")
         except Exception as e:
