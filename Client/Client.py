@@ -145,6 +145,7 @@ async def websocketlistener():
     async with websockets.connect(uri) as websocket:
         res = await websocket.recv()
         if res:
+            print(res)
             if "stop" in res:
                 global stop
                 stop = True
@@ -158,4 +159,4 @@ async def websocketlistener():
 
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
-
+asyncio.get_event_loop().run_forever()
