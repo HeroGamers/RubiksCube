@@ -1,3 +1,4 @@
+import json
 from gpiozero import DigitalOutputDevice
 from time import sleep
 import asyncio
@@ -14,6 +15,7 @@ moveStepperDegrees = 360  # The amount of degrees the move stepper should move t
 # Changeable variables
 stop = False
 running = False
+ws_message = ""  # A message to send to the websocket
 
 
 class Stepper:
@@ -143,22 +145,35 @@ async def websocketlistener():
     print("Starting listener...")
     uri = "ws://play.nfs.codes:8080"
     async with websockets.connect(uri) as websocket:
+        # Look for a response
         try:
             res = await websocket.recv()
             if res:
                 print(res)
-                if "stop" in res:
-                    global stop
-                    stop = True
-                else:
-                    if not running:
-                        print("Moves received - " + res)
-                        print("Running...")
-                        run(res)
-                    else:
-                        print("Cannot do moves when running...")
+                res_json = json.loads(res)
+                if res_json:
+                    print(res_json)
+                    if 'messagecode' in res_json:
+                        messagecode = res_json['messagecode']
+                        if "stop" in messagecode.lower():
+                            global stop
+                            stop = True
+                        elif "moves" in messagecode.lower():
+                            if not running:
+                                moves = res_json['data']
+                                print("Moves received - " + moves)
+                                print("Running...")
+                                run(moves)
+                            else:
+                                print("Cannot do moves when running!")
         except Exception as e:
             print("Error while receiving response from websocket! - " + str(e))
+        # Send a message to the websocket, if there is one
+        global ws_message
+        if ws_message:
+            message = str(ws_message)
+            ws_message = ""  # Clear ws_message
+            await websocket.send(message)
 
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
