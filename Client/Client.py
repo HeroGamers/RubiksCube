@@ -143,19 +143,22 @@ async def websocketlistener():
     print("Starting listener...")
     uri = "ws://play.nfs.codes:8080"
     async with websockets.connect(uri) as websocket:
-        res = await websocket.recv()
-        if res:
-            print(res)
-            if "stop" in res:
-                global stop
-                stop = True
-            else:
-                if not running:
-                    print("Moves received - " + res)
-                    print("Running...")
-                    run(res)
+        try:
+            res = await websocket.recv()
+            if res:
+                print(res)
+                if "stop" in res:
+                    global stop
+                    stop = True
                 else:
-                    print("Cannot do moves when running...")
+                    if not running:
+                        print("Moves received - " + res)
+                        print("Running...")
+                        run(res)
+                    else:
+                        print("Cannot do moves when running...")
+        except Exception as e:
+            print("Error while receiving response from websocket! - " + str(e))
 
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
