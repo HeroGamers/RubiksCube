@@ -7,7 +7,7 @@ import websockets
 # Unchangeable variables
 stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
 microSteps = 1  # The amount of microsteps the stepper takes
-pulsesPerRotation = 360/stepAngle*microSteps  # 360 degrees
+pulsesPerRotation = int(360/stepAngle*microSteps)  # 360 degrees
 pulseDelay = 450  # The delay between HIGH and LOW, in microseconds
 moveDelay = 2000  # The delay between each move, in milliseconds
 moveStepperDegrees = 360  # The amount of degrees the move stepper should move to fit/unfit
@@ -47,7 +47,7 @@ class Stepper:
 
     # Function to move a motor a certain amount of degrees
     def move(self, degrees):
-        for degree in range(pulsesPerRotation/360*degrees):
+        for degree in range(int(pulsesPerRotation/360*degrees)):
             self.stepper.on()
             sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
             self.stepper.off()
