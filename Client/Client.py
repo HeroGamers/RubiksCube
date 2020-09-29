@@ -123,11 +123,15 @@ def run(moves):
     moves = moves.split()  # Split at space
 
     print("Doing moves...")
+    count_moves = len(moves)
+    i = 1
     for move in moves:
         if not stop:  # If stop is not true
+            print("Doing move " + str(i) + "/" + str(count_moves) + "...")
             status = do_move(move)
             if not status:
                 print("Move didn't complete...")
+            i += 1
     print("Done with the moves!")
 
     print("Moving the move stepper... Please wait...")
