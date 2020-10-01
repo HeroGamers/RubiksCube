@@ -65,12 +65,12 @@ class Stepper:
 
 
 # Define the steppers
-DownStepper = Stepper(1, 2, 3)
-FrontStepper = Stepper(4, 5, 6)
-BackStepper = Stepper(7, 8, 9)
-RightStepper = Stepper(10, 11, 12)
-LeftStepper = Stepper(13, 14, 15)
-MoveStepper = Stepper(17, 20, 21)
+DownStepper = Stepper(14, 15, 18)
+FrontStepper = Stepper(2, 3, 4)
+BackStepper = Stepper(17, 27, 22)
+RightStepper = Stepper(5, 6, 13)
+LeftStepper = Stepper(10, 9, 11)
+MoveStepper = Stepper(25, 8, 7)
 
 
 # Function to do a certain move
@@ -99,7 +99,7 @@ def do_move(notation):
             motor.move(90)
 
         # Delay after the move
-        sleep(moveDelay)
+        sleep(moveDelay*10**(-3))  # milliseconds to seconds
         return True
 
     return False
