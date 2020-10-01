@@ -62,12 +62,12 @@ class Stepper:
     # Function to turn on the stepper
     def on(self):
         if self.enPin and self.enable:
-            self.enable.on()
+            self.enable.off()
 
     # Function to turn on the stepper
     def off(self):
         if self.enPin and self.enable:
-            self.enable.off()
+            self.enable.on()
 
 
 # Define the steppers
