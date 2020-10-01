@@ -9,7 +9,7 @@ stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
 microSteps = 1  # The amount of microsteps the stepper takes
 pulsesPerRotation = int(360/stepAngle*microSteps)  # 360 degrees
 pulseDelay = 450  # The delay between HIGH and LOW, in microseconds
-moveDelay = 1000  # The delay between each move, in milliseconds
+moveDelay = 100  # The delay between each move, in milliseconds
 moveStepperDegrees = 360  # The amount of degrees the move stepper should move to fit/unfit
 
 # Changeable variables
@@ -78,6 +78,14 @@ RightStepper = Stepper(5, 6, 13)
 LeftStepper = Stepper(10, 9, 11)
 MoveStepper = Stepper(25, 8, 7)
 
+# Turn them all off
+DownStepper.off()
+FrontStepper.off()
+BackStepper.off()
+RightStepper.off()
+LeftStepper.off()
+MoveStepper.off()
+
 
 # Function to do a certain move
 def do_move(notation):
@@ -133,14 +141,23 @@ def run(moves):
 
     # Move the move stepper to the correct position...
     print("Moving move stepper...")
+    MoveStepper.on()
     MoveStepper.set_direction("RIGHT")
     MoveStepper.move(moveStepperDegrees)
+    MoveStepper.off()
     print("Done moving the move stepper!")
 
     # Do the moves
     moves = moves.split()  # Split at space
 
     print("Doing moves...")
+    # Turn all drives on
+    DownStepper.on()
+    FrontStepper.on()
+    BackStepper.on()
+    RightStepper.on()
+    LeftStepper.on()
+    # Do moves
     count_moves = len(moves)
     i = 1
     for move in moves:
@@ -151,10 +168,18 @@ def run(moves):
                 print("Move didn't complete...")
             i += 1
     print("Done with the moves!")
+    # Turn them off again
+    DownStepper.off()
+    FrontStepper.off()
+    BackStepper.off()
+    RightStepper.off()
+    LeftStepper.off()
 
     print("Moving the move stepper... Please wait...")
+    MoveStepper.on()
     MoveStepper.set_direction("LEFT")
     MoveStepper.move(moveStepperDegrees)
+    MoveStepper.off()
     print("Done moving the move stepper, feel free to pull out cube!")
 
     # Set running variable to False
