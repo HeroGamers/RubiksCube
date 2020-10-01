@@ -9,13 +9,19 @@ stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
 microSteps = 1  # The amount of microsteps the stepper takes
 pulsesPerRotation = int(360/stepAngle*microSteps)  # 360 degrees
 pulseDelay = 450  # The delay between HIGH and LOW, in microseconds
-moveDelay = 2000  # The delay between each move, in milliseconds
+moveDelay = 1000  # The delay between each move, in milliseconds
 moveStepperDegrees = 360  # The amount of degrees the move stepper should move to fit/unfit
 
 # Changeable variables
+debug = True
 stop = False
 running = False
 ws_message = ""  # A message to send to the websocket
+
+
+def logDebug(message):
+    if debug:
+        print(message)
 
 
 class Stepper:
@@ -75,33 +81,45 @@ MoveStepper = Stepper(25, 8, 7)
 
 # Function to do a certain move
 def do_move(notation):
+    logDebug(notation)
     # Find the stepper motor
     motor = None
     if "D" in notation:
+        logDebug("Selected DownStepper")
         motor = DownStepper
     elif "R" in notation:
+        logDebug("Selected RightStepper")
         motor = RightStepper
     elif "L" in notation:
+        logDebug("Selected LeftStepper")
         motor = LeftStepper
     elif "F" in notation:
+        logDebug("Selected FrontStepper")
         motor = FrontStepper
     elif "B" in notation:
+        logDebug("Selected BackStepper")
         motor = BackStepper
 
     if motor:
         if "'" in notation:  # The left turning notation
+            logDebug("Moving left once...")
             motor.set_direction("LEFT")
             motor.move(90)
             motor.set_direction("RIGHT")
         elif "2" in notation:  # The move 180 notation
+            logDebug("Moving 180 degrees...")
             motor.move(180)
         else:  # Normal notation
+            logDebug("Moving right once...")
             motor.move(90)
 
         # Delay after the move
+        logDebug("Done moving, sleeping...")
         sleep(moveDelay*10**(-3))  # milliseconds to seconds
+        logDebug("Done sleeping!")
         return True
 
+    logDebug("Didn't find a motor, returning false...")
     return False
 
 
