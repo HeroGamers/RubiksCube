@@ -1,7 +1,6 @@
 import json
 import math
 import StepperFactory as SF
-from time import sleep
 import asyncio
 import websockets
 
@@ -56,14 +55,14 @@ async def do_move(notation):
         if "'" in notation:  # The left turning notation
             logDebug("Moving left once...")
             motor.set_direction("LEFT")
-            await motor.move(90)
+            motor.move(90)
             motor.set_direction("RIGHT")
         elif "2" in notation:  # The move 180 notation
             logDebug("Moving 180 degrees...")
-            await motor.move(180)
+            motor.move(180)
         else:  # Normal notation
             logDebug("Moving right once...")
-            await motor.move(90)
+            motor.move(90)
 
         # Delay after the move
         logDebug("Done moving, sleeping...")
@@ -79,15 +78,18 @@ async def do_move(notation):
 async def run(moves):
     global stop
     global running
+    global ws_message
 
     # Change running variable to True
     running = True
+    # Send to websocket that we're running
+    ws_message = "The robot is running! Do not touch!"
 
     # Move the move stepper to the correct position...
     log("Moving move stepper...")
     SF.MoveStepper.on()
     SF.MoveStepper.set_direction("RIGHT")
-    await SF.MoveStepper.move(moveStepperDegrees)
+    SF.MoveStepper.move(moveStepperDegrees)
     SF.MoveStepper.off()
     log("Done moving the move stepper!")
 
@@ -122,12 +124,14 @@ async def run(moves):
     log("Moving the move stepper... Please wait...")
     SF.MoveStepper.on()
     SF.MoveStepper.set_direction("LEFT")
-    await SF.MoveStepper.move(moveStepperDegrees)
+    SF.MoveStepper.move(moveStepperDegrees)
     SF.MoveStepper.off()
     log("Done moving the move stepper, feel free to pull out cube!")
 
     # Set running variable to False
     running = False
+    # Send to websocket that we're done running
+    ws_message = "The robot is done running! Feel free to pull it out!"
     # Be sure that stop is set to False, if it has been stopped
     stop = False
 

@@ -37,7 +37,7 @@ class Stepper:
             print("Error 1 - Direction not found")
 
     # Function to move a motor a certain amount of degrees
-    async def move(self, degrees):
+    def move(self, degrees):
         # Don't make the sleep async, the delay on the sleep in async is too slow, and gets weird
         for degree in range(int(round(pulsesPerRotation/360*degrees))):
             self.stepper.on()
