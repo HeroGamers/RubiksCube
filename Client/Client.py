@@ -147,7 +147,11 @@ async def websocketlistener():
                 res = await websocket.recv()
                 if res:
                     logDebug(res)
-                    res_json = json.loads(res)
+                    res_json = None
+                    try:
+                        res_json = json.loads(res)
+                    except Exception as e:
+                        logDebug("The response received is not JSON")
                     if res_json:
                         logDebug(res_json)
                         if 'messagecode' in res_json:
