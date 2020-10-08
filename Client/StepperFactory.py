@@ -38,11 +38,12 @@ class Stepper:
 
     # Function to move a motor a certain amount of degrees
     async def move(self, degrees):
+        # Don't make the sleep async, the delay on the sleep in async is too slow, and gets weird
         for degree in range(int(round(pulsesPerRotation/360*degrees))):
             self.stepper.on()
-            await asyncio.sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
+            sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
             self.stepper.off()
-            await asyncio.sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
+            sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
 
     # Function to turn on the stepper
     def on(self):

@@ -87,7 +87,7 @@ async def run(moves):
     log("Moving move stepper...")
     SF.MoveStepper.on()
     SF.MoveStepper.set_direction("RIGHT")
-    SF.MoveStepper.move(moveStepperDegrees)
+    await SF.MoveStepper.move(moveStepperDegrees)
     SF.MoveStepper.off()
     log("Done moving the move stepper!")
 
@@ -122,7 +122,7 @@ async def run(moves):
     log("Moving the move stepper... Please wait...")
     SF.MoveStepper.on()
     SF.MoveStepper.set_direction("LEFT")
-    SF.MoveStepper.move(moveStepperDegrees)
+    await SF.MoveStepper.move(moveStepperDegrees)
     SF.MoveStepper.off()
     log("Done moving the move stepper, feel free to pull out cube!")
 
