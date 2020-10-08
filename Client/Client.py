@@ -14,7 +14,6 @@ moveStepperDegrees = 360*(moveStepperDistance/(math.pi*gearPitchDiameter))  # Th
 debug = True
 stop = False
 running = False
-ws_message = ""  # A message to send to the websocket
 ws_uri = "ws://play.nfs.codes:8080"  # URI for the websocket
 
 
@@ -76,15 +75,15 @@ async def do_move(notation):
 
 
 # The run function
-async def run(moves):
+async def run(moves, websocket=None):
     global stop
     global running
-    global ws_message
 
     # Change running variable to True
     running = True
-    # Send to websocket that we're running
-    ws_message = "The robot is running! Do not touch!"
+    if websocket:
+        # Send to websocket that we're running
+        await websocket.send("The robot is running! Do not touch!")
 
     # Move the move stepper to the correct position...
     log("Moving move stepper...")
@@ -131,8 +130,9 @@ async def run(moves):
 
     # Set running variable to False
     running = False
-    # Send to websocket that we're done running
-    ws_message = "The robot is done running! Feel free to pull it out!"
+    if websocket:
+        # Send to websocket that we're done running
+        await websocket.send("The robot is done running! Feel free to pull it out!")
     # Be sure that stop is set to False, if it has been stopped
     stop = False
 
@@ -161,7 +161,7 @@ async def websocketlistener():
                                     logDebug("Moves received - " + moves)
                                     log("Running...")
                                     try:
-                                        asyncio.ensure_future(run(moves))  # Do moves, but continue with other stuff
+                                        asyncio.ensure_future(run(moves, websocket))  # Do moves, but continue with other stuff
                                     except Exception as e:
                                         log("Error while doing moves! - " + str(e))
                                 else:
@@ -169,22 +169,6 @@ async def websocketlistener():
             except Exception as e:
                 log("Error while receiving response from websocket! - " + str(e))
 
-
-async def websocketsender():
-    log("Starting sender...")
-    async with websockets.connect(ws_uri) as websocket:
-        # Loop this
-        while True:
-            # Send a message to the websocket, if there is one
-            global ws_message
-            if ws_message:
-                logDebug("There's a websocket message! Sending it!")
-                message = str(ws_message)
-                ws_message = ""  # Clear ws_message
-                await websocket.send(message)
-            await asyncio.sleep(1)  # Don't check all the time lol
-
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
-asyncio.get_event_loop().run_until_complete(websocketsender())
 asyncio.get_event_loop().run_forever()

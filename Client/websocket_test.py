@@ -5,10 +5,11 @@ from time import sleep
 move_loop = asyncio.new_event_loop()
 
 
-async def moveSteppers():
+async def moveSteppers(websocket):
     print(3)
     await asyncio.sleep(10)
     print(4)
+    await websocket.send("fuck me")
 
 
 async def websocketlistener():
@@ -21,7 +22,7 @@ async def websocketlistener():
                 res = await websocket.recv()
                 if res:
                     print(res)
-                    asyncio.ensure_future(moveSteppers())
+                    asyncio.ensure_future(moveSteppers(websocket))
                     print(2)
             except Exception as e:
                 print(e)
