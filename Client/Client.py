@@ -107,7 +107,7 @@ async def run(moves):
     for move in moves:
         if not stop:  # If stop is not true
             log("Doing move " + str(i) + "/" + str(count_moves) + "...")
-            status = do_move(move)
+            status = await do_move(move)
             if not status:
                 log("Move didn't complete...")
             i += 1
