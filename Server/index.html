@@ -212,6 +212,9 @@
 	function Animate(d) {
 		socket.emit("Animate", d)
 	}
+	socket.on("clientMessage", (m)=>{
+		console.log("clientMessage:",m)
+	})
 </script>
 </html>
 

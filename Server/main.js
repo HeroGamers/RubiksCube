@@ -158,6 +158,7 @@ io.on('connection', (socket) => {
 wss.on('connection', function connection(ws) {
 	ws.on('message', function incoming(message) {
 		ws.send(message);
+		io.emit("clientMessage", message)
 	});
 
 });
