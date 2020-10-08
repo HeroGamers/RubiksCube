@@ -158,6 +158,7 @@ async def websocketlistener():
                                     run(moves)
                                 except Exception as e:
                                     log("Error while doing moves! - " + str(e))
+                                log("Done running!")
                             else:
                                 log("Cannot do moves when running!")
         except Exception as e:
@@ -170,5 +171,5 @@ async def websocketlistener():
             await websocket.send(message)
 
 # Start the Websocket Listener
-asyncio.get_event_loop().run_until_complete(websocketlistener())
+asyncio.get_event_loop().create_task(websocketlistener())
 asyncio.get_event_loop().run_forever()
