@@ -15,6 +15,7 @@ debug = True
 stop = False
 running = False
 ws_message = ""  # A message to send to the websocket
+ws_uri = "ws://play.nfs.codes:8080"  # URI for the websocket
 
 
 def log(message):
@@ -138,8 +139,7 @@ async def run(moves):
 
 async def websocketlistener():
     log("Starting listener...")
-    uri = "ws://play.nfs.codes:8080"
-    async with websockets.connect(uri) as websocket:
+    async with websockets.connect(ws_uri) as websocket:
         # Loop this
         while True:
             # Look for a response
@@ -168,13 +168,23 @@ async def websocketlistener():
                                     log("Cannot do moves when running!")
             except Exception as e:
                 log("Error while receiving response from websocket! - " + str(e))
+
+
+async def websocketsender():
+    log("Starting sender...")
+    async with websockets.connect(ws_uri) as websocket:
+        # Loop this
+        while True:
             # Send a message to the websocket, if there is one
             global ws_message
             if ws_message:
+                logDebug("There's a websocket message! Sending it!")
                 message = str(ws_message)
                 ws_message = ""  # Clear ws_message
                 await websocket.send(message)
+            await asyncio.sleep(1)  # Don't check all the time lol
 
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
+asyncio.get_event_loop().run_until_complete(websocketsender())
 asyncio.get_event_loop().run_forever()
