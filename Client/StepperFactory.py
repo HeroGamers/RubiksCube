@@ -1,5 +1,6 @@
 from gpiozero import DigitalOutputDevice
 from time import sleep
+import asyncio
 
 # Unchangeable variables
 stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
@@ -36,12 +37,12 @@ class Stepper:
             print("Error 1 - Direction not found")
 
     # Function to move a motor a certain amount of degrees
-    def move(self, degrees):
+    async def move(self, degrees):
         for degree in range(int(round(pulsesPerRotation/360*degrees))):
             self.stepper.on()
-            sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
+            await asyncio.sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
             self.stepper.off()
-            sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
+            await asyncio.sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
 
     # Function to turn on the stepper
     def on(self):

@@ -32,7 +32,7 @@ SF.turnAllOff()
 
 
 # Function to do a certain move
-def do_move(notation):
+async def do_move(notation):
     logDebug(notation)
     # Find the stepper motor
     motor = None
@@ -56,18 +56,18 @@ def do_move(notation):
         if "'" in notation:  # The left turning notation
             logDebug("Moving left once...")
             motor.set_direction("LEFT")
-            motor.move(90)
+            await motor.move(90)
             motor.set_direction("RIGHT")
         elif "2" in notation:  # The move 180 notation
             logDebug("Moving 180 degrees...")
-            motor.move(180)
+            await motor.move(180)
         else:  # Normal notation
             logDebug("Moving right once...")
-            motor.move(90)
+            await motor.move(90)
 
         # Delay after the move
         logDebug("Done moving, sleeping...")
-        sleep(moveDelay*10**(-3))  # milliseconds to seconds
+        await asyncio.sleep(moveDelay*10**(-3))  # milliseconds to seconds
         logDebug("Done sleeping!")
         return True
 
@@ -76,7 +76,7 @@ def do_move(notation):
 
 
 # The run function
-def run(moves):
+async def run(moves):
     global stop
     global running
 
@@ -136,40 +136,41 @@ async def websocketlistener():
     log("Starting listener...")
     uri = "ws://play.nfs.codes:8080"
     async with websockets.connect(uri) as websocket:
-        # Look for a response
-        try:
-            res = await websocket.recv()
-            if res:
-                logDebug(res)
-                res_json = json.loads(res)
-                if res_json:
-                    logDebug(res_json)
-                    if 'messagecode' in res_json:
-                        messagecode = res_json['messagecode']
-                        if "stop" in messagecode.lower():
-                            global stop
-                            stop = True
-                        elif "moves" in messagecode.lower():
-                            if not running:
-                                moves = res_json['data']
-                                logDebug("Moves received - " + moves)
-                                log("Running...")
-                                try:
-                                    run(moves)
-                                except Exception as e:
-                                    log("Error while doing moves! - " + str(e))
-                                log("Done running!")
-                            else:
-                                log("Cannot do moves when running!")
-        except Exception as e:
-            log("Error while receiving response from websocket! - " + str(e))
-        # Send a message to the websocket, if there is one
-        global ws_message
-        if ws_message:
-            message = str(ws_message)
-            ws_message = ""  # Clear ws_message
-            await websocket.send(message)
+        # Loop this
+        while True:
+            # Look for a response
+            try:
+                res = await websocket.recv()
+                if res:
+                    logDebug(res)
+                    res_json = json.loads(res)
+                    if res_json:
+                        logDebug(res_json)
+                        if 'messagecode' in res_json:
+                            messagecode = res_json['messagecode']
+                            if "stop" in messagecode.lower():
+                                global stop
+                                stop = True
+                            elif "moves" in messagecode.lower():
+                                if not running:
+                                    moves = res_json['data']
+                                    logDebug("Moves received - " + moves)
+                                    log("Running...")
+                                    try:
+                                        asyncio.ensure_future(run(moves))  # Do moves, but continue with other stuff
+                                    except Exception as e:
+                                        log("Error while doing moves! - " + str(e))
+                                else:
+                                    log("Cannot do moves when running!")
+            except Exception as e:
+                log("Error while receiving response from websocket! - " + str(e))
+            # Send a message to the websocket, if there is one
+            global ws_message
+            if ws_message:
+                message = str(ws_message)
+                ws_message = ""  # Clear ws_message
+                await websocket.send(message)
 
 # Start the Websocket Listener
-asyncio.get_event_loop().create_task(websocketlistener())
+asyncio.get_event_loop().run_until_complete(websocketlistener())
 asyncio.get_event_loop().run_forever()
