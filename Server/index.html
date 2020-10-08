@@ -13,6 +13,7 @@
 	<canvas style="background-color: aqua" height="500" width="800"></canvas>
 	<input type="" name="">
 	<button onclick="SendMove(document.querySelector('input').value)">apply</button>
+	<button onclick="Stop()">stop robot</button>
 </body>
 <script>
 	var CubeAsString = "";
@@ -197,6 +198,9 @@
 	}
 	function Solve()	{
 		socket.emit("Solve", "s")
+	}
+	function Stop()	{
+		socket.emit("Stop", "Stop")
 	}
 	function Scramble() {
 		socket.emit("Scramble", "test")
