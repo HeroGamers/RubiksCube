@@ -1,11 +1,22 @@
 const { clear, log, table } = console
 const { existsSync, mkdirSync, writeFileSync, readFileSync } = require('fs')
 
+// settings
+const https_port = 443
+const http_port = 80
+let useHttps = true
+process.env.NODE_ENV = 'production'
+
 // networking
 const axios = require('axios')
 const io = require('socket.io-client')
 const WebSocket = require('ws')
+const fs = require('fs')
 
+// credentials
+const privateKey  = fs.readFileSync('./config/sslcert/privatekey.pem', 'utf8')
+const certificate = fs.readFileSync('./config/sslcert/origin.pem', 'utf8')
+const credentials = {key: privateKey, cert: certificate}
 
 let actions
 let settings
@@ -70,18 +81,26 @@ let wsConf = getConnection('websocket', () => {
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
-const port = 3000
 
+const http = require('http')
+const https = require('https')
+var forceSsl = require('express-force-ssl')
+// const port = 3000
+
+app.enable('trust proxy')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use(express.static('public'))
 app.set('view engine', 'pug')
 
+// Enforce HTTPS
+app.use(forceSsl)
+
 app.get('/:page', (req, res) => {
     // Hent actions
-    // 
-    
+    //
+
     res.render('index', { buttons: actions })
 })
 app.get('/', (req, res) => {
@@ -134,13 +153,27 @@ app.post('/doAction', (req, res) => {
     }
 })
 
-app.listen(port, () => {
-    console.log(`controller interface app listening at http://localhost:${port}`)
+
+// Start server
+
+// Express
+// app.listen(port, () => {
+//     console.log(`controller interface app listening at http://localhost:${port}`)
+// })
+
+// Http and https
+https_server = https.createServer(credentials, app)
+http_server = http.createServer(app)
+
+// let port = (useHttps) ? https_port : http_port
+// let type = (useHttps) ? 'HTTPS' : 'HTTP'
+
+http_server.listen(http_port, () => {
+    log(`Controller Interface app listening at http://localhost:${http_port}`)
 })
-
-
-
-
+https_server.listen(https_port, () => {
+    log(`Controller Interface app listening at https://localhost:${https_port}`)
+})
 
 
 
