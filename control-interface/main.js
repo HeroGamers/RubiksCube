@@ -1,7 +1,10 @@
 const { clear, log, table } = console
 const { existsSync, mkdirSync, writeFileSync, readFileSync } = require('fs')
+
+// networking
 const axios = require('axios')
-clear()
+const io = require('socket.io-client')
+const WebSocket = require('ws')
 
 
 let actions
@@ -10,9 +13,54 @@ let connections
 
 let cookies = []
 
+let websocket
+let socketio
+
+
 checkSass()
 checkConfig()
 
+
+let wsioConf = getConnection('socket.io', () => {
+    const socket = io(wsioConf.destination)
+
+    socket.on('connect', () => {
+        // either with send()
+        socket.send('Hello!')
+
+        socketio.send = (message) => {
+            socket.send(JSON.stringify( { msg: message } ))
+        }
+
+        // or with emit() and custom event names
+        socket.emit('salutations', 'Hello!', { 'mr': 'john' }, Uint8Array.from([1, 2, 3, 4]))
+    })
+
+    // handle the event sent with socket.send()
+    socket.on('message', data => {
+        console.log(data)
+    })
+
+    // handle the event sent with socket.emit()
+    socket.on('greetings', (elem1, elem2, elem3) => {
+        console.log(elem1, elem2, elem3)
+    })
+})
+
+
+let wsConf = getConnection('websocket', () => {
+    const ws = new WebSocket(wsConf.destination)
+
+    ws.on('open', function open() {
+        websocket.send = (message) => {
+            ws.send(JSON.stringify({ msg: message}))
+        }
+    })
+
+    ws.on('message', function incoming(data) {
+        console.log('from websocket:', data)
+    })
+})
 
 
 // Opret forbindelser
@@ -52,24 +100,35 @@ app.post('/doAction', (req, res) => {
                     
                     axios
                         .post('http://localhost:3000/doAction', {
-                            todo: 'Buy the milk'
+                            msg: act.message
                         })
                         .then(res => {
                             res.send({ 'res': true })
+                            return
                         })
                         .catch(error => {
                             
 
                             res.send({ 'res': false })
+                            return
                         })
                     break
+                case 'websocket':
+                    try {
+                        websocket.send(act.message)
+                    } catch (err) {
+                        logError(err)
+                        res.send({ 'res': false })
+                        return
+                    }
+                    res.send({ 'res': true })
+                    break
                 case 'socket.io':
+
                     
             }
         }
     }
-
-    res.send({ 'res': true })
 })
 
 app.listen(port, () => {
@@ -128,7 +187,7 @@ function checkConfig() {
             { 
                 'title': 'Example connection',
                 'type': 'http post request || websocket || socket.io',
-                'destination': '127.0.0.1'
+                'destination': 'http://127.0.0.1 || ws://'
             }
         ], null, 4))
 
@@ -136,8 +195,7 @@ function checkConfig() {
             { 
                 'title': 'Example action button',
                 'connection-type': 'http post request || websocket || socket.io',
-                'message': '',
-                'message-type': 'plaintext || json'
+                'message': ''
             }
         ], null, 4))
 
