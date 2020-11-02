@@ -20,6 +20,7 @@ html(lang="dk")
 
     //- Optional JavaScript; choose one of the two! --
     script(defer src="/js/clickButtons.js")
+    script(defer src="/js/debug.js")
     //script(defer src="/js/bookmarker.js")
 
     title Rubik's Cube Controller
@@ -27,10 +28,14 @@ html(lang="dk")
     body
       h1.p-5 Rubik's Cube Controller
 
-      for btn of buttons
-        button.m-5(type="button" class="btn btn-primary") #{ btn.title }
+      div.controller
+        div.buttons
+          for btn of buttons
+            button.m-5(type="button" class="btn btn-primary") #{ btn.title }
+        div.debug
 
-      //footer
+      footer
+          a.modeSwitch
       //  div.bookmark(style="display: block")
 
 
