@@ -1,20 +1,13 @@
-var themeCookieName = "theme"
 let theme = "light"
 
-function getCookie(name) {
-    const value = `; ${document.cookie}`
-    const parts = value.split(`; ${name}=`)
-    if (parts.length === 2) return parts.pop().split(';').shift()
-}
+let themeStorage = localStorage.theme
 
-var themeCookie = getCookie(themeCookieName)
-
-if (themeCookie) {
-    if (themeCookie.toString().toLowerCase() === "light") {
-        console.log("Light theme in cookies")
+if (themeStorage) {
+    if (themeStorage.toString().toLowerCase() === "light") {
+        console.log("Light theme in storage")
     }
-    else if (themeCookie.toString().toLowerCase() === "dark") {
-        console.log("Dark theme in cookies")
+    else if (themeStorage.toString().toLowerCase() === "dark") {
+        console.log("Dark theme in storage")
         theme = "dark"
 
         var head = document.head;
@@ -32,7 +25,7 @@ if (themeCookie) {
     }
 }
 else {
-    console.log("No theme cookie")
+    console.log("No theme storage")
     // Create cookie
     setTheme("light")
 }
@@ -42,5 +35,5 @@ themeChooser.textContent = (theme === "light") ? "Dark Theme" : "Light Theme"
 themeChooser.onclick = function() { (theme === "light") ? setTheme("dark") : setTheme("light"); location.reload() }
 
 function setTheme(mode) {
-    document.cookie = themeCookieName + "="+ mode + "; expires=Thu, 01 Jan 3000 00:00:00 UTC; path=/;"
+    localStorage.theme = mode
 }
