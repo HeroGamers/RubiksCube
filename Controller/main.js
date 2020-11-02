@@ -4,7 +4,6 @@ const { existsSync, mkdirSync, writeFileSync, readFileSync } = require('fs')
 // settings
 const https_port = 443
 const http_port = 80
-let useHttps = true
 process.env.NODE_ENV = 'production'
 
 // networking
@@ -75,9 +74,6 @@ let wsConf = getConnection('websocket', () => {
 
 
 // Opret forbindelser
-
-
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
@@ -85,7 +81,6 @@ const app = express()
 const http = require('http')
 const https = require('https')
 var forceSsl = require('express-force-ssl')
-// const port = 3000
 
 app.enable('trust proxy')
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -155,18 +150,9 @@ app.post('/doAction', (req, res) => {
 
 
 // Start server
-
-// Express
-// app.listen(port, () => {
-//     console.log(`controller interface app listening at http://localhost:${port}`)
-// })
-
 // Http and https
 https_server = https.createServer(credentials, app)
 http_server = http.createServer(app)
-
-// let port = (useHttps) ? https_port : http_port
-// let type = (useHttps) ? 'HTTPS' : 'HTTP'
 
 http_server.listen(http_port, () => {
     log(`Controller Interface app listening at http://localhost:${http_port}`)
