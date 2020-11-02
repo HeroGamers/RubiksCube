@@ -4,6 +4,9 @@ html(lang="dk")
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1")
 
+    // Add to home screen
+    link(rel="manifest" href="homescreen.webmanifest")
+
     //- Bootstrap CSS --
     link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous")
     link(rel="stylesheet", href="/css/main.css")
@@ -17,14 +20,19 @@ html(lang="dk")
 
     //- Optional JavaScript; choose one of the two! --
     script(defer src="/js/clickButtons.js")
+    //script(defer src="/js/bookmarker.js")
 
     title Hello, world!
 
     body
-      h1.m-5 Hello, world!
+      h1.p-5 Hello, world!
 
-      for btn of buttons
-        button.m-5(type="button" class="btn btn-primary") #{ btn.title }
+      // for btn of buttons
+      //   button.m-5(type="button" class="btn btn-primary") #{ btn.title }
+
+      //footer
+      //  div.bookmark(style="display: block")
+
 
     
 

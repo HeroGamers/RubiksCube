@@ -9,9 +9,6 @@ for (let btn of buttons) {
 }
 
 
-
-
-
 function goFetch(route, data, opt_callback) {
 	fetch(route, {
 		method: 'POST',

@@ -30,10 +30,13 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 app.set('view engine', 'pug')
 
-app.get('/', (req, res) => {
+app.get('/:page', (req, res) => {
     // Hent actions
     // 
     
+    res.render('index', { buttons: actions })
+})
+app.get('/', (req, res) => {
     res.render('index', { buttons: actions })
 })
 
