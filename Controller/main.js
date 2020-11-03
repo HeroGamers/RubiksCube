@@ -23,54 +23,88 @@ let connections
 
 let cookies = []
 
-let websocket
-let socketio
-
 
 checkSass()
 checkConfig()
 
 
-let wsioConf = getConnection('socket.io', () => {
-    const socket = io(wsioConf.destination)
+let socket_message = ""
+let socket_response = ""
+let wsioConf = getConnection('socket.io')
+if (wsioConf) {
+    log("Setting up socket.io")
+    let socket = io(wsioConf["destination"])
 
     socket.on('connect', () => {
-        // either with send()
-        socket.send('Hello!')
+        log("socket.io Connected Successfully!")
+        function socketio_loop () {
+            setTimeout(function() {
+                if (socket_message !== "") {
+                    log("New message for socket.io, sending...")
+                    let emit_split = socket_message.split("|")
+                    socket_message = ""
 
-        socketio.send = (message) => {
-            socket.send(JSON.stringify( { msg: message } ))
+                    if (emit_split.length === 2) {
+                        log("Has split, gonna emit :)")
+                        log(emit_split[0].trim(), emit_split[1].trim())
+                        socket.emit(emit_split[0].trim(), emit_split[1].trim())
+                    }
+                    else {
+                        log("No split in arr message")
+                    }
+                }
+                socketio_loop()
+            }, 10)
         }
-
-        // or with emit() and custom event names
-        socket.emit('salutations', 'Hello!', { 'mr': 'john' }, Uint8Array.from([1, 2, 3, 4]))
+        socketio_loop()
     })
 
-    // handle the event sent with socket.send()
-    socket.on('message', data => {
-        console.log(data)
+    socket.on("clientMessage", (m)=>{
+        log("clientMessage:", m)
+        socket_response = "A message has been sent from the client: " + m
     })
-
-    // handle the event sent with socket.emit()
-    socket.on('greetings', (elem1, elem2, elem3) => {
-        console.log(elem1, elem2, elem3)
+    socket.on("cubeState", (CS)=>{
+        log("cubeState:", CS)
+        socket_response = "Current cube state: " + CS
     })
-})
+    socket.on("Done", (s)=>{
+        log("Done solving: ", s)
+        socket_response = "Done solving the cube, here are the moves: " + s
+    })
+}
 
-
-let wsConf = getConnection('websocket', () => {
-    const ws = new WebSocket(wsConf.destination)
+let ws_message = ""
+let ws_con = getConnection('websocket')
+if (ws_con) {
+    log("Setting up websocket...")
+    const ws = new WebSocket(ws_con["destination"])
 
     ws.on('open', function open() {
-        websocket.send = (message) => {
-            ws.send(JSON.stringify({ msg: message}))
+        log("WebSocket Connected Successfully!")
+        function ws_loop () {
+            setTimeout(function() {
+                if (ws_message !== "") {
+                    log("New message for websocket, sending...")
+                    let message = ws_message
+                    log(message)
+                    ws_message = ""
+                    ws.send(JSON.stringify({ msg: message}))
+                }
+                ws_loop()
+            }, 10)
         }
+        ws_loop()
     })
 
     ws.on('message', function incoming(data) {
-        console.log('from websocket:', data)
+        log('From websocket:', data)
     })
-})
+
+    ws.onerror = function(error) {
+        log("Error connecting to WebSocket")
+        logError(error)
+    }
+}
 
 
 // Opret forbindelser
@@ -104,20 +138,83 @@ app.get('/', (req, res) => {
 
 
 app.post('/doAction', (req, res) => {
-    log(req.body)
+    // log(req.body)
 
     for (let act of actions) {
-        if (act.title == req.body.action) {
+        if (act.title.toString().toLowerCase() === req.body.action.toString().toLowerCase()) {
+            // Get message from action
+            let act_msg = act['message']
+            // log(act_msg)
+
+            if (act_msg.includes("{") && act_msg.includes("}")) {
+                // there is a variable in the act message that we need to fetch
+                log("there is var")
+
+                // We split the vars to get them
+                let vars_split1 = act_msg.split("{")
+                let vars = []
+                let i = 0
+                for (let var_nonsplit of vars_split1) {
+                    if (i !== 0) {
+                        vars.push(var_nonsplit.split("}")[0])
+                    }
+                    i++
+                }
+                // log(vars)
+
+                // Time to check thar variable types
+                for (let vari of vars) {
+                    let type = vari.split(".")[0]
+                    let find = vari.split(".")[1]
+                    let value = undefined
+
+                    // get value depending on type
+                    switch (type) {
+                        case "elementValueFromClass":
+                            let documentElement = req.body.document.getElementsByClassName(find)
+                            if (documentElement.length > 0) {
+                                if (documentElement[0].value()) {
+                                    log("using found value")
+                                    value = documentElement[0].value()
+                                }
+                                else {
+                                    log("using textcontent")
+                                    value = documentElement[0].textContent
+                                }
+                            }
+                            else {
+                                log("No element found")
+                            }
+                            break
+                        case "valueFromInput":
+                            let input_fields = req.body.input_fields
+                            value = input_fields[find].replace("\\", "")
+                            // log(value)
+                            break
+                    }
+
+                    // log("Before:")
+                    // log("{"+vari+"}", value)
+                    // log(act_msg)
+                    // log(act_msg.replace("{valueFromInput.debugInput}", "fuck you man"))
+                    // log(act_msg.replace("{"+vari+"}", value))
+                    act_msg = act_msg.replace("{"+vari+"}", value)
+                    // log("After:")
+                    // log(act_msg)
+                }
+            }
+
+            // Get connection
             const con = getConnection(act['connection-type'])
+            // log(con)
 
             switch (con['type']) {
                 case 'http post request':
                     log('sending request')
 
-                    
                     axios
-                        .post('http://localhost:3000/doAction', {
-                            msg: act.message
+                        .post('http://localhost/doAction', {
+                            msg: act_msg
                         })
                         .then(res => {
                             res.send({ 'res': true })
@@ -131,19 +228,22 @@ app.post('/doAction', (req, res) => {
                         })
                     break
                 case 'websocket':
-                    try {
-                        websocket.send(act.message)
-                    } catch (err) {
-                        logError(err)
-                        res.send({ 'res': false })
-                        return
-                    }
-                    res.send({ 'res': true })
+                    log("Trying websocket")
+                    ws_message = act_msg
                     break
                 case 'socket.io':
-
-                    
+                    log("Trying socket.io")
+                    socket_message = act_msg
+                    setTimeout(function() {
+                        if (socket_response !== "") {
+                            log("There is socket response...")
+                            res.send({"res": true, "body": socket_response})
+                            socket_response = ""
+                        }
+                    }, 500);
+                    break
             }
+            break
         }
     }
 })
@@ -189,8 +289,6 @@ function getConnection(type) {
 
 
 
-
-
 function checkConfig() {
     if (!existsSync('./err-logs'))
         mkdirSync('./err-logs')
@@ -206,18 +304,38 @@ function checkConfig() {
         ], null, 4))
 
         writeFileSync('./config/connections.json', JSON.stringify([
-            { 
-                'title': 'Example connection',
-                'type': 'http post request || websocket || socket.io',
-                'destination': 'http://127.0.0.1 || ws://'
+            {
+                "title": "Example connection",
+                "type": "websocket",
+                "destination": "ws://nfs.codes"
+            },
+            {
+                "title": "Example connection",
+                "type": "socket.io",
+                "destination": "https://nfs.codes"
             }
         ], null, 4))
 
         writeFileSync('./config/actions.json', JSON.stringify([
-            { 
-                'title': 'Example action button',
-                'connection-type': 'http post request || websocket || socket.io',
-                'message': ''
+            {
+                "title": "Scramble",
+                "connection-type": "socket.io",
+                "message": "Scramble | test"
+            },
+            {
+                "title": "Solve",
+                "connection-type": "socket.io",
+                "message": "Solve | s"
+            },
+            {
+                "title": "Validate Moves",
+                "connection-type": "socket.io",
+                "message": "move | {valueFromInput.debugInput}"
+            },
+            {
+                "title": "Stop Robot",
+                "connection-type": "socket.io",
+                "message": "Stop | Stop"
             }
         ], null, 4))
 

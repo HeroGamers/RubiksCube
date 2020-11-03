@@ -4,3 +4,4 @@ node_modules
 logs
 config
 .idea/
+err-logs/

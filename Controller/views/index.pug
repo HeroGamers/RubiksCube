@@ -56,9 +56,14 @@ html(lang="en")
       h1.p-5.noselect Rubik's Cube Controller
 
       div.controller.pb-5
-        div.buttons
-          for btn of buttons
-            button.m-5(type="button" class="btn btn-primary") #{ btn.title }
+        div.text-information.row
+          p.cubestate(style="display: none")
+          p.solvemoves(style="display: none")
+          p.clientmessage(style="display: none")
+        div.buttons.row
+            div.col-md-12
+              for btn of buttons
+                button.m-5(type="button" class="btn btn-primary") #{ btn.title }
         div.debug
 
       footer.noselect
