@@ -1,4 +1,4 @@
-html(lang="dk")
+html(lang="en")
   head
     //- Required meta tags --
     meta(charset="utf-8")
@@ -41,6 +41,9 @@ html(lang="dk")
     script(defer src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous")
     script(defer src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js" integrity="sha384-5h4UG+6GOuV9qXh6HqOLwZMY4mnLPraeTrjT5v07o347pj6IkfuoASuGBhfDsp3d" crossorigin="anonymous")
 
+    // Socket.io
+    script(defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous")
+
     //- Optional JavaScript; choose one of the two! --
     script(defer src="/js/clickButtons.js")
     script(defer src="/js/debug.js")
@@ -50,17 +53,19 @@ html(lang="dk")
     title Rubik's Cube Controller
 
     body.text-center
-      h1.p-5 Rubik's Cube Controller
+      h1.p-5.noselect Rubik's Cube Controller
 
-      div.controller
+      div.controller.pb-5
         div.buttons
           for btn of buttons
             button.m-5(type="button" class="btn btn-primary") #{ btn.title }
         div.debug
 
-      footer
+      footer.noselect
           p #[a.modeSwitch] | #[a.themeSwitch]
       //  div.bookmark(style="display: block")
+
+      script(defer src="/js/oldCube.js")
 
 
     
