@@ -72,3 +72,8 @@ Steppers = [DownStepper, FrontStepper, BackStepper, RightStepper, LeftStepper, M
 def turnAllOff():
     for stepper in Steppers:
         stepper.off()
+
+
+def turnAllOn():
+    for stepper in Steppers:
+        stepper.on()

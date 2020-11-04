@@ -1,0 +1,78 @@
+html(lang="en")
+  head
+    //- Required meta tags --
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+
+    //- Favicons -
+    link(rel="shortcut icon", href="/icons/favicon.ico")
+    link(rel="apple-touch-icon-precomposed", sizes="57x57", href="/img/apple-touch-icon-57x57.png")
+    link(rel="apple-touch-icon-precomposed", sizes="114x114", href="/img/apple-touch-icon-114x114.png")
+    link(rel="apple-touch-icon-precomposed", sizes="72x72", href="/img/apple-touch-icon-72x72.png")
+    link(rel="apple-touch-icon-precomposed", sizes="144x144", href="/img/apple-touch-icon-144x144.png")
+    link(rel="apple-touch-icon-precomposed", sizes="60x60", href="/img/apple-touch-icon-60x60.png")
+    link(rel="apple-touch-icon-precomposed", sizes="120x120", href="/img/apple-touch-icon-120x120.png")
+    link(rel="apple-touch-icon-precomposed", sizes="76x76", href="/img/apple-touch-icon-76x76.png")
+    link(rel="apple-touch-icon-precomposed", sizes="152x152", href="/img/apple-touch-icon-152x152.png")
+    link(rel="icon", type="image/png", href="/img/favicon-196x196.png", sizes="196x196")
+    link(rel="icon", type="image/png", href="/img/favicon-96x96.png", sizes="96x96")
+    link(rel="icon", type="image/png", href="/img/favicon-32x32.png", sizes="32x32")
+    link(rel="icon", type="image/png", href="/img/favicon-16x16.png", sizes="16x16")
+    link(rel="icon", type="image/png", href="/img/favicon-128.png", sizes="128x128")
+    meta(name="application-name" , content="&nbsp;")
+    meta(name="msapplication-TileColor" , content="#FFFFFF")
+    meta(name="msapplication-TileImage" , content="/img/mstile-144x144.png")
+    meta(name="msapplication-square70x70logo" , content="/img/mstile-70x70.png")
+    meta(name="msapplication-square150x150logo" , content="/img/mstile-150x150.png")
+    meta(name="msapplication-wide310x150logo" , content="/img/mstile-310x150.png")
+    meta(name="msapplication-square310x310logo" , content="/img/mstile-310x310.png")
+
+    // Add to home screen
+    link(rel="manifest" href="homescreen.webmanifest")
+
+    //- Bootstrap CSS --
+    link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous")
+    link(rel="stylesheet", href="/css/main.css")
+
+    //- Option 1: Bootstrap Bundle with Popper.js --
+    script(defer src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD" crossorigin="anonymous")
+
+    //- Option 2: Separate Popper.js and Bootstrap JS
+    script(defer src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous")
+    script(defer src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js" integrity="sha384-5h4UG+6GOuV9qXh6HqOLwZMY4mnLPraeTrjT5v07o347pj6IkfuoASuGBhfDsp3d" crossorigin="anonymous")
+
+    // Socket.io
+    script(defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous")
+
+    //- Optional JavaScript; choose one of the two! --
+    script(defer src="/js/clickButtons.js")
+    script(defer src="/js/debug.js")
+    script(defer src="js/themehandler.js")
+    //script(defer src="/js/bookmarker.js")
+
+    title Rubik's Cube Controller
+
+    body.text-center
+      h1.p-5.noselect Rubik's Cube Controller
+
+      div.controller.pb-5
+        div.text-information.row
+          p.cubestate(style="display: none")
+          p.solvemoves(style="display: none")
+          p.clientmessage(style="display: none")
+        div.buttons.row
+            div.col-md-12
+              for btn of buttons
+                button.m-5(type="button" class="btn btn-primary") #{ btn.title }
+        div.debug
+
+      footer.noselect
+          p #[a.modeSwitch] | #[a.themeSwitch]
+      //  div.bookmark(style="display: block")
+
+      script(defer src="/js/oldCube.js")
+
+
+    
+
+    

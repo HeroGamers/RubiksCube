@@ -1,0 +1,15 @@
+{
+  "background_color": "white",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "img/rubiks_controller.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "name": "Rubik's Cube Robot Control Interface",
+  "description": "Allows you to control the Rubik's Cube Robot from your mobile device easily.",
+  "short_name": "Rubik's Controller",
+  "start_url": "/index.html"
+}
