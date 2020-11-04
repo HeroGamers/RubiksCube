@@ -85,24 +85,19 @@ async def run(moves, websocket=None):
         # Send to websocket that we're running
         await websocket.send("The robot is running! Do not touch!")
 
+    # Turn all drives on
+    SF.turnAllOn()
+
     # Move the move stepper to the correct position...
     log("Moving move stepper...")
-    SF.MoveStepper.on()
     SF.MoveStepper.set_direction("RIGHT")
     SF.MoveStepper.move(moveStepperDegrees)
-    SF.MoveStepper.off()
     log("Done moving the move stepper!")
 
     # Do the moves
     moves = moves.split()  # Split at space
 
     log("Doing moves...")
-    # Turn all drives on
-    SF.DownStepper.on()
-    SF.FrontStepper.on()
-    SF.BackStepper.on()
-    SF.RightStepper.on()
-    SF.LeftStepper.on()
     # Do moves
     count_moves = len(moves)
     i = 1
@@ -114,7 +109,7 @@ async def run(moves, websocket=None):
                 log("Move didn't complete...")
             i += 1
     log("Done with the moves!")
-    # Turn them off again
+    # Turn the rubik's steppers off again
     SF.DownStepper.off()
     SF.FrontStepper.off()
     SF.BackStepper.off()
@@ -122,10 +117,10 @@ async def run(moves, websocket=None):
     SF.LeftStepper.off()
 
     log("Moving the move stepper... Please wait...")
-    SF.MoveStepper.on()
     SF.MoveStepper.set_direction("LEFT")
     SF.MoveStepper.move(moveStepperDegrees)
-    SF.MoveStepper.off()
+    # Turn all off
+    SF.turnAllOff()
     log("Done moving the move stepper, feel free to pull out cube!")
 
     # Set running variable to False
