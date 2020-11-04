@@ -85,15 +85,15 @@ async def run(moves, websocket=None):
         # Send to websocket that we're running
         await websocket.send("The robot is running! Do not touch!")
 
-    # Turn all drives on
-    SF.turnAllOn()
-
     # Move the move stepper to the correct position...
     log("Moving move stepper...")
+    SF.MoveStepper.on()
     SF.MoveStepper.set_direction("RIGHT")
     SF.MoveStepper.move(moveStepperDegrees)
     log("Done moving the move stepper!")
 
+    # Turn all drives on
+    SF.turnAllOn()
     # Do the moves
     moves = moves.split()  # Split at space
 
