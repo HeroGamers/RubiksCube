@@ -165,6 +165,7 @@ async def websocketlistener():
                                         log("Error while doing moves! - " + str(e))
                                 else:
                                     log("Cannot do moves when running!")
+                                    await websocket.send("Cannot do moves while running!")
             except Exception as e:
                 log("Error while receiving response from websocket! - " + str(e))
 

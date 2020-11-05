@@ -6,7 +6,6 @@ switcher.onclick = function() { (debug === "true") ? setDebug("false") : setDebu
 if (debug) {
     if (debug === "true") {
         console.log("Debug mode enabled")
-        var socket = io("https://nfs.codes")
         switcher.textContent = "Normal Mode"
 
         // The controller
@@ -52,7 +51,7 @@ if (debug) {
         let manualStart = document.createElement("button")
         manualStart.className = "btn btn-primary manualStart m-2"
         manualStart.type = "button"
-        manualStart.textContent = "Apply Moves from Input"
+        manualStart.textContent = "Apply Moves from Input Field"
         // let sendValue =
         manualStart.onclick = function(){SendMove(document.getElementsByClassName("debugInput")[0].value)}
 
@@ -76,6 +75,19 @@ if (debug) {
         stopButton.type = "button"
         stopButton.textContent = "Stop Robot"
         stopButton.onclick = function(){Stop()}
+
+        // Step buttons
+        const steps = [0, 1, 2, 3]
+        for (let step of steps) {
+            let button = document.createElement("button")
+            button.className = "btn btn-warning stepButton m-2"
+            button.type = "button"
+            button.textContent = "Step " + step.toString()
+            button.onclick = function(){localStorage.currentStep = step; checkStep()}
+
+            col1.appendChild(button)
+        }
+
 
         // Oldcube
         let oldCubeCanvas = document.createElement("canvas")
