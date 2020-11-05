@@ -1,0 +1,21 @@
+{
+  "https_port": 443,
+  "http_port": 80,
+  "useHttps": false,
+  "forceSecureDBSave": false,
+  "prettyPrint": true,
+  "compileSassOnRun": false,
+  "clearOnRun": true,
+  "msgOnServerStart": false,
+  "databases": [
+    "users",
+    "klasser"
+  ],
+  "assignDate": "12/01",
+  "superAdmins": [
+    "rasmus",
+    "marcus"
+  ],
+  "iv": "CBRjsTKQulEdoEHm1ssBNw==",
+  "salt": "TsquoaAmWNcGnftxWiHQZF9iRq6n03pG+9jJg2vjGhazesBWnW1LdFUmKsotZyJd9wXTQ9viNbSmDp79utbRhgONl1KvDp9dMj4FdlsfMnVyc+CrVE2xrg9SAyEnNKX0k34+I78IE6tS1I5NGFmsD52lsnab78WEZlQ9jcdlrU8="
+}

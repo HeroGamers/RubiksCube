@@ -1,0 +1,31 @@
+{
+  "name": "Client-Interface",
+  "version": "0.0.1",
+  "description": "Et interface til rubiks cube projektet",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "start+": "nodemon main.js --ignore local --ignore ./public --ignore config/collections"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeroGamers/RubiksCube"
+  },
+  "author": "Rasmus Foldberg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HeroGamers/RubiksCube/issues"
+  },
+  "homepage": "https://github.com/HeroGamers/RubiksCube#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bootstrap": "^5.0.0-alpha1",
+    "bootstrap-icons": "^1.0.0-alpha5",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "helmet": "^3.23.3",
+    "nodemon": "^2.0.4",
+    "pug": "^3.0.0",
+    "sass": "^1.26.11"
+  }
+}
