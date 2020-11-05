@@ -145,10 +145,12 @@ app.post('/doAction', (req, res) => {
             // Get message from action
             let act_msg = act['message']
             // log(act_msg)
+            let found_var = true
 
             if (act_msg.includes("{") && act_msg.includes("}")) {
                 // there is a variable in the act message that we need to fetch
                 log("there is var")
+                found_var = false
 
                 // We split the vars to get them
                 let vars_split1 = act_msg.split("{")
@@ -164,34 +166,43 @@ app.post('/doAction', (req, res) => {
 
                 // Time to check thar variable types
                 for (let vari of vars) {
-                    let type = vari.split(".")[0]
-                    let find = vari.split(".")[1]
-                    let value = undefined
+                    let data_variables = req.body.data
+                    let value = data_variables[vari]
 
-                    // get value depending on type
-                    switch (type) {
-                        case "elementValueFromClass":
-                            let documentElement = req.body.document.getElementsByClassName(find)
-                            if (documentElement.length > 0) {
-                                if (documentElement[0].value()) {
-                                    log("using found value")
-                                    value = documentElement[0].value()
-                                }
-                                else {
-                                    log("using textcontent")
-                                    value = documentElement[0].textContent
-                                }
-                            }
-                            else {
-                                log("No element found")
-                            }
-                            break
-                        case "valueFromInput":
-                            let input_fields = req.body.input_fields
-                            value = input_fields[find].replace("\\", "")
-                            // log(value)
-                            break
+                    if (value === undefined) {
+                        console.log("No value in data variable " + vari)
+                        break
                     }
+                    found_var = true
+
+                    // let type = vari.split(".")[0]
+                    // let find = vari.split(".")[1]
+                    // let value = undefined
+                    //
+                    // // get value depending on type
+                    // switch (type) {
+                    //     case "elementValueFromClass":
+                    //         let documentElement = req.body.document.getElementsByClassName(find)
+                    //         if (documentElement.length > 0) {
+                    //             if (documentElement[0].value()) {
+                    //                 log("using found value")
+                    //                 value = documentElement[0].value()
+                    //             }
+                    //             else {
+                    //                 log("using textcontent")
+                    //                 value = documentElement[0].textContent
+                    //             }
+                    //         }
+                    //         else {
+                    //             log("No element found")
+                    //         }
+                    //         break
+                    //     case "valueFromInput":
+                    //         let input_fields = req.body.input_fields
+                    //         value = input_fields[find].replace("\\", "")
+                    //         // log(value)
+                    //         break
+                    // }
 
                     // log("Before:")
                     // log("{"+vari+"}", value)
@@ -204,46 +215,55 @@ app.post('/doAction', (req, res) => {
                 }
             }
 
-            // Get connection
-            const con = getConnection(act['connection-type'])
-            // log(con)
+            if (found_var === true) {
+                // Get connection
+                const con = getConnection(act['connection-type'])
+                // log(con)
 
-            switch (con['type']) {
-                case 'http post request':
-                    log('sending request')
+                switch (con['type']) {
+                    case 'http post request':
+                        log('sending request')
 
-                    axios
-                        .post('http://localhost/doAction', {
-                            msg: act_msg
-                        })
-                        .then(res => {
-                            res.send({ 'res': true })
-                            return
-                        })
-                        .catch(error => {
-                            
+                        axios
+                            .post('http://localhost/doAction', {
+                                msg: act_msg
+                            })
+                            .then(res => {
+                                res.send({ 'res': true })
+                                return
+                            })
+                            .catch(error => {
 
-                            res.send({ 'res': false })
-                            return
-                        })
-                    break
-                case 'websocket':
-                    log("Trying websocket")
-                    ws_message = act_msg
-                    break
-                case 'socket.io':
-                    log("Trying socket.io")
-                    socket_message = act_msg
-                    setTimeout(function() {
-                        if (socket_response !== "") {
-                            log("There is socket response...")
-                            res.send({"res": true, "body": socket_response})
-                            socket_response = ""
-                        }
-                    }, 500);
-                    break
+
+                                res.send({ 'res': false })
+                                return
+                            })
+                        break
+                    case 'websocket':
+                        log("Trying websocket")
+                        ws_message = act_msg
+                        break
+                    case 'socket.io':
+                        log("Trying socket.io")
+                        socket_message = act_msg
+                        setTimeout(function() {
+                            if (socket_response !== "") {
+                                log("There is socket response...")
+                                res.send({"res": true, "body": socket_response})
+                                socket_response = ""
+                            }
+                        }, 500);
+                        break
+                }
+                break
             }
-            break
+            else {
+                log("Didn't find variable, not sending message")
+                res.status(404)
+                res.send({"res": false, "err": "no variable found"})
+            }
+
+
         }
     }
 })

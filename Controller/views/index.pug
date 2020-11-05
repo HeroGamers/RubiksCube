@@ -53,24 +53,26 @@ html(lang="en")
     title Rubik's Cube Controller
 
     body.text-center
-      h1.p-5.noselect Rubik's Cube Controller
+      div.container
+        h1.p-5.noselect Rubik's Cube Controller
 
-      div.controller.pb-5
-        div.text-information.row
-          p.cubestate(style="display: none")
-          p.solvemoves(style="display: none")
-          p.clientmessage(style="display: none")
-        div.buttons.row
+        div.controller.pb-5
+          div.buttons.row
             div.col-md-12
               for btn of buttons
                 button.m-5(type="button" class="btn btn-primary") #{ btn.title }
-        div.debug
+          div.text-information.row
+            //p.cubestate(style="display: none")
+            //p.solvemoves(style="display: none")
+            //p.clientmessage(style="display: none")
+            p.statusmessage(style="display: none")
+          div.debug
 
-      footer.noselect
-          p #[a.modeSwitch] | #[a.themeSwitch]
-      //  div.bookmark(style="display: block")
+        footer.noselect
+            p #[a.modeSwitch] | #[a.themeSwitch]
+        //  div.bookmark(style="display: block")
 
-      script(defer src="/js/oldCube.js")
+        script(defer src="/js/oldCube.js")
 
 
     

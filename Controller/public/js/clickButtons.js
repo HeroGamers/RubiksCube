@@ -4,38 +4,56 @@ for (let btn of buttons) {
     btn.onclick = () => {
 		let input_fields = document.getElementsByTagName("input")
 
-		let fields_dict = {}
+		let data_dict = {}
 
 		for (let field of input_fields) {
 			let field_class_list = field.className.split(" ")
 			for (let class_name of field_class_list) {
-				fields_dict[class_name] = field.value
+				data_dict["Input."+class_name] = field.value
 			}
 		}
 
-		console.log(fields_dict)
+		Object.keys(localStorage).forEach(function(key){
+			data_dict["LocalStorage."+key] = localStorage.getItem(key)
+		})
 
-        goFetch('/doAction', {'action': btn.innerText, "input_fields": fields_dict}, (res, data) => {
-            // alert(data)
-			if (data.toString().includes("Done")) {
-				let text_field = document.getElementsByClassName("solvemoves")[0]
-				text_field.style.cssText = text_field.style.cssText.replace("display: none", "display: block")
-				text_field.textContent = data
-			}
-			else if (data.toString().includes("cube state")) {
-				let text_field = document.getElementsByClassName("cubestate")[0]
-				text_field.style.cssText = text_field.style.cssText.replace("display: none", "display: block")
-				text_field.textContent = data
-			}
-			else if (data.toString().includes("message has been sent from the")) {
-				let text_field = document.getElementsByClassName("clientmessage")[0]
-				text_field.style.cssText = text_field.style.cssText.replace("display: none", "display: block")
-				text_field.textContent = data
+		console.log(data_dict)
+
+        goFetch('/doAction', {'action': btn.innerText, "data": data_dict}, (res, data) => {
+			// alert(data)
+			if (res === true) {
+				if (data.toString().includes("Done")) {
+					let text_field = document.getElementsByClassName("solvemoves")[0]
+					if (text_field) {
+						text_field.style.cssText = text_field.style.cssText.replace("display: none", "display: block")
+						text_field.textContent = data
+					}
+
+					localStorage.solveMoves = data.toString().replace("Done solving the cube, here are the moves: ", "")
+				} else if (data.toString().includes("cube state")) {
+					let text_field = document.getElementsByClassName("cubestate")[0]
+					if (text_field) {
+						text_field.style.cssText = text_field.style.cssText.replace("display: none", "display: block")
+						text_field.textContent = data
+					}
+
+					localStorage.cubeState = data.toString().replace("Current cube state: ", "")
+				} else if (data.toString().includes("message has been sent from the")) {
+					let text_field = document.getElementsByClassName("clientmessage")[0]
+					if (text_field) {
+						text_field.style.cssText = text_field.style.cssText.replace("display: none", "display: block")
+						text_field.textContent = data
+					}
+
+					localStorage.clientMessage = data.toString().replace("A message has been sent from the client: ", "")
+				} else {
+					alert(data)
+				}
 			}
 			else {
-				alert(data)
+				alert("Error: "+data)
 			}
-        })
+		})
     }
 }
 
