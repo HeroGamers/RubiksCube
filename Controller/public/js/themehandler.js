@@ -18,6 +18,9 @@ if (themeStorage) {
         link.href = "css/darktheme.css";
 
         head.appendChild(link);
+
+        // Cube color
+        renderer.setClearColor('#2d2d2d', 1);
     }
     else {
         console.log("Unknown theme, setting to light")

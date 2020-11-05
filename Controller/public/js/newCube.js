@@ -28,9 +28,7 @@ const altCOLORS = [GREEN, RED, ORANGE, YELLOW, WHITE, BLUE]
 
 
 let renderer = new THREE.WebGLRenderer({ antialias: true })
-renderer.setSize(window.innerWidth, window.innerHeight/2)
-renderer.setClearColor('#1d1d26', 1);
-document.getElementById('canvas').appendChild(renderer.domElement)
+renderer.setClearColor('#ffffff', 1);
 
 
 // *! VIGTIGE VARIABLER
@@ -310,5 +308,3 @@ function render() {
 
     renderer.render(scene, camera)
 }
-
-render()

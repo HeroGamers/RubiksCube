@@ -10,7 +10,7 @@ if (debug) {
 
         // The controller
         let controllerDiv = document.getElementsByClassName("debug")[0]
-        controllerDiv.className = controllerDiv.className + " m-5"
+        controllerDiv.className = controllerDiv.className + " m-5 pb-5"
 
         let row1 = document.createElement("div")
         row1.className = "row"

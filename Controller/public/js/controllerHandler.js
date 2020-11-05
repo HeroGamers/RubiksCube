@@ -33,6 +33,13 @@ function checkStep() {
 
             stepTitles[0].textContent = "Welcome to the controller!"
 
+            let cubeDiv = document.createElement("div")
+            cubeDiv.className = "col-md-12 d-flex justify-content-center"
+            controllerContentContainer.appendChild(cubeDiv)
+            cubeDiv.appendChild(renderer.domElement)
+            render()
+            onWindowResize()
+
             let startButton = undefined
             createButton("Let's get started!", "localStorage.currentStep = 1; checkStep()",(button)=>{
                 console.log(button)
