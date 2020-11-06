@@ -154,7 +154,8 @@ io.on('connection', (socket) => {
 		send("Stop", "Stop")
 	})
 	socket.on("cubeAsString", (cubeAsString)=>{
-
+		cube = Cube.fromString(cubeAsString)
+		io.emit("cubeState", cube.asString())
 	})
 });
 
