@@ -215,7 +215,6 @@ function doCamera() {
 
     function checkScanState() {
         setTimeout(function(){
-            console.log(1)
             if (doneScanning === true) {
                 console.log("Ayeee, we're done scanning")
                 stepTitles[1].textContent = "-Done scanning the cube-"
@@ -234,11 +233,8 @@ function doCamera() {
                 controllerButtonsContainer.appendChild(nextStepButton)
             }
             else {
-                console.log(2)
                 if (editMode) {
-                    console.log(3)
                     if (nextCamButton === undefined) {
-                        console.log(4)
                         createButton("Next Cube Face", 'controllerButtonsContainer.removeChild(controllerButtonsContainer.firstChild); nextCamButton = undefined; next()',(button)=>{
                             console.log(button)
                             nextCamButton = button
@@ -247,11 +243,10 @@ function doCamera() {
                         controllerButtonsContainer.appendChild(nextCamButton)
                     }
                 }
-                console.log(5)
                 checkScanState()
             }
 
-        }, 1000)
+        }, 500)
     }
     checkScanState()
 }
