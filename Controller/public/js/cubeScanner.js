@@ -1,5 +1,5 @@
 const memLength = 20;
-let tolerance = 50;
+let tolerance = 35;
 
 let doneScanning;
 
@@ -20,7 +20,7 @@ var cubeAsString = "";
 var autoScanMem = [];
 var currentFaceColors = [];
 
-var mousePosOnCanvas = {
+var mousePosOnScannerCanvas = {
 	x: 0,
 	y: 0
 }
@@ -123,6 +123,8 @@ function snap() {
 
 function startCam(element=null) {
 	doneScanning = false
+	cubeAsString = ""
+
 	video = document.createElement("video")
 	video.setAttribute("autoplay", "")
 	video.setAttribute("playsinline", "")
@@ -192,7 +194,7 @@ function startCam(element=null) {
 	}, ];
 
 	scannerCanvas.onclick = (e) => {
-		mousePosOnCanvas = {
+		mousePosOnScannerCanvas = {
 			x: e.offsetX,
 			y: e.offsetY
 		}
@@ -296,8 +298,8 @@ function autoScan() {
 
 function cubeEditor() {
 	for (var i = 0; i < 9; i++) {
-		if (mousePosOnscannerCanvas.x >= cubeSquares[i].startPosX && mousePosOnscannerCanvas.x <= cubeSquares[i].startPosX + squareSize) {
-			if (mousePosOnscannerCanvas.y >= cubeSquares[i].startPosY && mousePosOnscannerCanvas.y <= cubeSquares[i].startPosY + squareSize) {
+		if (mousePosOnScannerCanvas.x >= cubeSquares[i].startPosX && mousePosOnScannerCanvas.x <= cubeSquares[i].startPosX + squareSize) {
+			if (mousePosOnScannerCanvas.y >= cubeSquares[i].startPosY && mousePosOnScannerCanvas.y <= cubeSquares[i].startPosY + squareSize) {
 				if (i != 4) {
 					var nextColor;
 					if (face.indexOf(currentFaceColors[i]) == 5) {
