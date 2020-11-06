@@ -1,5 +1,10 @@
-var canvas;
-var context;
+const memLength = 20;
+let tolerance = 50;
+
+let doneScanning;
+
+var scannerCanvas;
+var scannerContext;
 var video;
 var gridWidth; //tykkelsen på stregerne
 var squareSize; // deler canvas op i 3 lige store minus de 4 streger der er i gridet
@@ -109,25 +114,15 @@ function stopCam() {
 function snap() {
 	if (video.srcObject) {
 		//tegner først videoen
-		context.drawImage(video, 0, 0);
+		scannerContext.drawImage(video, 0, 0);
 		//og derefter grid'et
 		drawCubeGrid(face[scanningSide])
 		scan()
 	}
 }
 
-function startCam() {
-	var overlay = document.createElement("div");
-	overlay.id = "overlay"
-	overlay.style.position = "fixed";
-	overlay.style.width = "100%";
-	overlay.style.height = "100%";
-	overlay.style.top = "0";
-	overlay.style.left = "0";
-	overlay.style.right = "0";
-	overlay.style.bottom = "0";
-	overlay.style.backgroundColor = "rgba(0,0,0,0.5)";
-
+function startCam(element=null) {
+	doneScanning = false
 	video = document.createElement("video")
 	video.setAttribute("autoplay", "")
 	video.setAttribute("playsinline", "")
@@ -135,19 +130,37 @@ function startCam() {
 	video.style.opacity = "100";
 	video.style.height = "1px";
 	video.style.width = "1px";
-	overlay.appendChild(video)
 
-	canvas = document.createElement("canvas")
-	canvas.setAttribute("height", "300px");
-	canvas.setAttribute("width", "300px");
-	canvas.style.border = "2px solid red";
-	overlay.appendChild(canvas)
+	scannerCanvas = document.createElement("canvas")
+	scannerCanvas.setAttribute("height", "300px");
+	scannerCanvas.setAttribute("width", "300px");
+	// scannerCanvas.style.border = "2px solid red";
 
-	document.body.appendChild(overlay)
+	if (element === null) {
+		let overlay = document.createElement("div");
+		overlay.id = "overlay"
+		overlay.style.position = "fixed";
+		overlay.style.width = "100%";
+		overlay.style.height = "100%";
+		overlay.style.top = "0";
+		overlay.style.left = "0";
+		overlay.style.right = "0";
+		overlay.style.bottom = "0";
+		overlay.style.backgroundColor = "rgba(0,0,0,0.5)";
 
-	context = canvas.getContext('2d');
-	gridWidth = Math.round(canvas.width / 50) //tykkelsen på stregerne
-	squareSize = Math.round((canvas.width - (4 * gridWidth)) / 3) // deler canvas op i 3 lige store minus de 4 streger der er i gridet
+		overlay.appendChild(video)
+		overlay.appendChild(scannerCanvas)
+
+		document.body.appendChild(overlay)
+	}
+	else {
+		element.appendChild(video)
+		element.appendChild(scannerCanvas)
+	}
+
+	scannerContext = scannerCanvas.getContext('2d');
+	gridWidth = Math.round(scannerCanvas.width / 50) //tykkelsen på stregerne
+	squareSize = Math.round((scannerCanvas.width - (4 * gridWidth)) / 3) // deler canvas op i 3 lige store minus de 4 streger der er i gridet
 
 	cubeSquares = [{
 		startPosX: gridWidth,
@@ -178,7 +191,7 @@ function startCam() {
 		startPosY: gridWidth * 3 + squareSize * 2,
 	}, ];
 
-	canvas.onclick = (e) => {
+	scannerCanvas.onclick = (e) => {
 		mousePosOnCanvas = {
 			x: e.offsetX,
 			y: e.offsetY
@@ -203,11 +216,19 @@ function scan() {
 	// 	//console.log(res)
 	// }, "color")
 
+<<<<<<< HEAD
 	if (autoScanMem.length == 10) {
 		autoScan()
 		autoScanMem.shift()
 	}
 	if (autoScanMem.length <= 10) {
+=======
+	if (autoScanMem.length == memLength) {
+		autoScan()
+		autoScanMem.shift()
+	}
+	if (autoScanMem.length <= memLength) {
+>>>>>>> origin/master
 		autoScanMem.push(scanData)
 	}
 
@@ -261,7 +282,11 @@ function autoScan() {
 			} else {
 				checker.push(1)
 			}
+<<<<<<< HEAD
 			if (arrayAverage(colorCheck[i].averageBestScore) > 31) {
+=======
+			if (arrayAverage(colorCheck[i].averageBestScore) > tolerance) {
+>>>>>>> origin/master
 				checker.push(0)
 			} else {
 				checker.push(1)
@@ -272,8 +297,8 @@ function autoScan() {
 		stopCam()
 		for (var i = 0; i < currentFaceColors.length; i++) {
 			if (i != 4) {
-				context.fillStyle = currentFaceColors[i]
-				context.fillRect(cubeSquares[i].startPosX, cubeSquares[i].startPosY, squareSize, squareSize)
+				scannerContext.fillStyle = currentFaceColors[i]
+				scannerContext.fillRect(cubeSquares[i].startPosX, cubeSquares[i].startPosY, squareSize, squareSize)
 			}
 		}
 		autoScanMem = []
@@ -283,8 +308,8 @@ function autoScan() {
 
 function cubeEditor() {
 	for (var i = 0; i < 9; i++) {
-		if (mousePosOnCanvas.x >= cubeSquares[i].startPosX && mousePosOnCanvas.x <= cubeSquares[i].startPosX + squareSize) {
-			if (mousePosOnCanvas.y >= cubeSquares[i].startPosY && mousePosOnCanvas.y <= cubeSquares[i].startPosY + squareSize) {
+		if (mousePosOnscannerCanvas.x >= cubeSquares[i].startPosX && mousePosOnscannerCanvas.x <= cubeSquares[i].startPosX + squareSize) {
+			if (mousePosOnscannerCanvas.y >= cubeSquares[i].startPosY && mousePosOnscannerCanvas.y <= cubeSquares[i].startPosY + squareSize) {
 				if (i != 4) {
 					var nextColor;
 					if (face.indexOf(currentFaceColors[i]) == 5) {
@@ -293,8 +318,8 @@ function cubeEditor() {
 						nextColor = face[face.indexOf(currentFaceColors[i]) + 1]
 					}
 					currentFaceColors[i] = nextColor
-					context.fillStyle = nextColor
-					context.fillRect(cubeSquares[i].startPosX, cubeSquares[i].startPosY, squareSize, squareSize)
+					scannerContext.fillStyle = nextColor
+					scannerContext.fillRect(cubeSquares[i].startPosX, cubeSquares[i].startPosY, squareSize, squareSize)
 				}
 			}
 		}
@@ -323,14 +348,20 @@ function next() {
 		scanningSide++
 		startCamStream()
 	} else {
+<<<<<<< HEAD
 		socket.emit("cubeAsString", cubeAsString)
+=======
+		console.log("Done scanning")
+		console.log(cubeAsString)
+		doneScanning = true
+>>>>>>> origin/master
 	}
 }
 
 //funktion som tager gennemsnittet af hver farve(rgb) & alpha'en inde for en valgt "cubeSquare"
 function scanner(cubeSquare) {
 	//henter alt pixel dataen inden for den valgte "cubeSquare"
-	var squareData = context.getImageData(cubeSquares[cubeSquare].startPosX, cubeSquares[cubeSquare].startPosY, squareSize, squareSize);
+	var squareData = scannerContext.getImageData(cubeSquares[cubeSquare].startPosX, cubeSquares[cubeSquare].startPosY, squareSize, squareSize);
 
 	//objekt med et array for hver subpixel
 	var squarePixels = {
@@ -378,56 +409,56 @@ function scanner(cubeSquare) {
 
 //funktion som tegner et grid på canvas'et som gør det nemmere at placere kameraet rigtigt
 function drawCubeGrid(currentFaceColor) {
-	context.fillStyle = currentFaceColor; //skifter farven til at være "currentFaceColor"
-	context.fillRect(gridWidth * 2 + squareSize, gridWidth * 2 + squareSize, squareSize, squareSize) //tegner firkanten i midten af cube'en
+	scannerContext.fillStyle = currentFaceColor; //skifter farven til at være "currentFaceColor"
+	scannerContext.fillRect(gridWidth * 2 + squareSize, gridWidth * 2 + squareSize, squareSize, squareSize) //tegner firkanten i midten af cube'en
 
-	context.fillStyle = "black"; //skifter farven til sort
+	scannerContext.fillStyle = "black"; //skifter farven til sort
 	//de første fire objektet i array'et er de vertikale linjer og de sidste 4 objekter er de horisontale linjer
 	var grid =
 		[{
 			sx: 0, //start position i x-aksen
 			sy: 0, //start position i y-aksen
 			w: gridWidth, //breden på linjen
-			h: canvas.height //længen af linjen
+			h: scannerCanvas.height //længen af linjen
 		}, {
 			sx: gridWidth + squareSize, //start position i x-aksen
 			sy: 0, //start position i y-aksen
 			w: gridWidth, //breden på linjen
-			h: canvas.height //længen af linjen
+			h: scannerCanvas.height //længen af linjen
 		}, {
 			sx: gridWidth * 2 + squareSize * 2, //start position i x-aksen
 			sy: 0, //start position i y-aksen
 			w: gridWidth, //breden på linjen
-			h: canvas.height //længen af linjen
+			h: scannerCanvas.height //længen af linjen
 		}, {
 			sx: gridWidth * 3 + squareSize * 3, //start position i x-aksen
 			sy: 0, //start position i y-aksen
 			w: gridWidth, //breden på linjen
-			h: canvas.height //længen af linjen
+			h: scannerCanvas.height //længen af linjen
 		}, {
 			sx: 0, //start position i x-aksen
 			sy: 0, //start position i y-aksen
-			w: canvas.height, //breden på linjen
+			w: scannerCanvas.height, //breden på linjen
 			h: gridWidth //længen af linjen
 		}, {
 			sx: 0, //start position i x-aksen
 			sy: gridWidth + squareSize, //start position i y-aksen
-			w: canvas.height, //breden på linjen
+			w: scannerCanvas.height, //breden på linjen
 			h: gridWidth //længen af linjen
 		}, {
 			sx: 0, //start position i x-aksen
 			sy: gridWidth * 2 + squareSize * 2, //start position i y-aksen
-			w: canvas.height, //breden på linjen
+			w: scannerCanvas.height, //breden på linjen
 			h: gridWidth //længen af linjen
 		}, {
 			sx: 0, //start position i x-aksen
 			sy: gridWidth * 3 + squareSize * 3, //start position i y-aksen
-			w: canvas.height, //breden på linjen
+			w: scannerCanvas.height, //breden på linjen
 			h: gridWidth //længen af linjen
 		}]
 	//loop der tegner alle stregerne fra "grid" array'et
 	for (var i = 0; i < grid.length; i++) {
-		context.fillRect(grid[i].sx, grid[i].sy, grid[i].w, grid[i].h)
+		scannerContext.fillRect(grid[i].sx, grid[i].sy, grid[i].w, grid[i].h)
 	}
 }
 
@@ -456,24 +487,24 @@ function startCamStream() {
 /*
 tegner en test cube
 */
-function test() {
-	context.fillStyle = face[0];
-	context.fillRect(cubeSquares[0].startPosX, cubeSquares[0].startPosY, squareSize, squareSize)
-	context.fillStyle = face[1];
-	context.fillRect(cubeSquares[1].startPosX, cubeSquares[1].startPosY, squareSize, squareSize)
-	context.fillStyle = face[2];
-	context.fillRect(cubeSquares[2].startPosX, cubeSquares[2].startPosY, squareSize, squareSize)
-	context.fillStyle = face[3];
-	context.fillRect(cubeSquares[3].startPosX, cubeSquares[3].startPosY, squareSize, squareSize)
-	context.fillStyle = face[4];
-	context.fillRect(cubeSquares[4].startPosX, cubeSquares[4].startPosY, squareSize, squareSize)
-	context.fillStyle = face[5];
-	context.fillRect(cubeSquares[5].startPosX, cubeSquares[5].startPosY, squareSize, squareSize)
-	context.fillStyle = face[0];
-	context.fillRect(cubeSquares[6].startPosX, cubeSquares[6].startPosY, squareSize, squareSize)
-	context.fillStyle = face[2];
-	context.fillRect(cubeSquares[7].startPosX, cubeSquares[7].startPosY, squareSize, squareSize)
-	context.fillStyle = face[1];
-	context.fillRect(cubeSquares[8].startPosX, cubeSquares[8].startPosY, squareSize, squareSize)
-}
+// function test() {
+// 	scannerContext.fillStyle = face[0];
+// 	scannerContext.fillRect(cubeSquares[0].startPosX, cubeSquares[0].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[1];
+// 	scannerContext.fillRect(cubeSquares[1].startPosX, cubeSquares[1].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[2];
+// 	scannerContext.fillRect(cubeSquares[2].startPosX, cubeSquares[2].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[3];
+// 	scannerContext.fillRect(cubeSquares[3].startPosX, cubeSquares[3].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[4];
+// 	scannerContext.fillRect(cubeSquares[4].startPosX, cubeSquares[4].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[5];
+// 	scannerContext.fillRect(cubeSquares[5].startPosX, cubeSquares[5].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[0];
+// 	scannerContext.fillRect(cubeSquares[6].startPosX, cubeSquares[6].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[2];
+// 	scannerContext.fillRect(cubeSquares[7].startPosX, cubeSquares[7].startPosY, squareSize, squareSize)
+// 	scannerContext.fillStyle = face[1];
+// 	scannerContext.fillRect(cubeSquares[8].startPosX, cubeSquares[8].startPosY, squareSize, squareSize)
+// }
 //*/

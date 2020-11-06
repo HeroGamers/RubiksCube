@@ -1,19 +1,18 @@
 if (debug === "true") {
     var CubeAsString = "";
-    var canvas = document.getElementsByClassName("oldCubeCanvas")[0];
 
-    // console.log(canvas.parentElement.clientWidth)
+    // console.log(oldCubeCanvas.parentElement.clientWidth)
 
-    let parentPadding = parseInt(window.getComputedStyle(canvas.parentElement, null).getPropertyValue('padding-left').replace("px",""))*2
+    let parentPadding = parseInt(window.getComputedStyle(oldCubeCanvas.parentElement, null).getPropertyValue('padding-left').replace("px",""))*2
     // console.log(parentPadding)
-    canvas.width = canvas.parentElement.clientWidth - parentPadding; // width of row, Normally 700
+    oldCubeCanvas.width = oldCubeCanvas.parentElement.clientWidth - parentPadding; // width of row, Normally 700
 
-    canvas.width = (canvas.width > 500) ? 500 : canvas.width
+    oldCubeCanvas.width = (oldCubeCanvas.width > 500) ? 500 : oldCubeCanvas.width
 
-    canvas.height = 500/700*canvas.width; // Normally 500
-    var context = canvas.getContext("2d");
-    var SquareSpace = canvas.height*0.2/10;
-    var SquareSize = canvas.height*0.8/9;
+    oldCubeCanvas.height = 500/700*oldCubeCanvas.width; // Normally 500
+    var oldCubeContext = oldCubeCanvas.getContext("2d");
+    var SquareSpace = oldCubeCanvas.height*0.2/10;
+    var SquareSize = oldCubeCanvas.height*0.8/9;
     var Pos = [
         //up face
         {x:SquareSpace*4+SquareSize*3,y:SquareSpace},
@@ -102,8 +101,8 @@ if (debug === "true") {
         B:"blue",
     }
     function DrawSquare(i, c) {
-        context.fillStyle = Color[c];
-        context.fillRect(Pos[i].x, Pos[i].y, SquareSize, SquareSize);
+        oldCubeContext.fillStyle = Color[c];
+        oldCubeContext.fillRect(Pos[i].x, Pos[i].y, SquareSize, SquareSize);
     }
     var SquareSpaces = [
         // | linjer
@@ -135,8 +134,8 @@ if (debug === "true") {
 
     ]
     function DrawSquareSpace(i) {
-        context.fillStyle = "black";
-        context.fillRect(SquareSpaces[i].x, SquareSpaces[i].y, SquareSpaces[i].w, SquareSpaces[i].h);
+        oldCubeContext.fillStyle = "black";
+        oldCubeContext.fillRect(SquareSpaces[i].x, SquareSpaces[i].y, SquareSpaces[i].w, SquareSpaces[i].h);
     }
     for (var i = 0; i < SquareSpaces.length; i++) {
         DrawSquareSpace(i)
@@ -150,7 +149,7 @@ if (debug === "true") {
         DrawCube(CS)
         CubeAsString = CS
     })
-    canvas.onclick = (e)=> {
+    oldCubeCanvas.onclick = (e)=> {
         var MousePos = {x: e.layerX, y: e.layerY};
         for (var i = 0; i < Pos.length; i++) {
             if (MousePos.x >= Pos[i].x && Pos[i].x + SquareSize >= MousePos.x && MousePos.y >= Pos[i].y && Pos[i].y + SquareSize >= MousePos.y) {
