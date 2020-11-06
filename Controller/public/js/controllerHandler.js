@@ -56,7 +56,7 @@ function checkStep() {
             stepTitles[1].textContent = "-Time to scan the cube-"
 
             let scanButton = undefined
-            createButton("Open my camera", "startCam()",(button)=>{
+            createButton("Open my camera", "controllerButtonsContainer.removeChild(controllerButtonsContainer.firstChild); doCamera()",(button)=>{
                 console.log(button)
                 scanButton = button
             })
@@ -151,6 +151,14 @@ function checkStep() {
                 let loader = document.createElement("div")
                 loader.className = "loader"
                 loaderCol.appendChild(loader)
+
+                let backButton = undefined
+                createButton("Go back to the beginning", 'localStorage.currentStep = 0; checkStep()',(button)=>{
+                    console.log(button)
+                    backButton = button
+                }, "btn-warning")
+
+                controllerButtonsContainer.appendChild(backButton)
             }
 
             let movesButton = undefined
@@ -189,6 +197,64 @@ function checkStep() {
 
 checkStep()
 
+
+let nextCamButton = undefined
+function doCamera() {
+    stepTitles[1].textContent = "-Scanning the cube-"
+    // Create div for camera
+    let camCol = document.createElement("div")
+    camCol.className = "col-md-12 d-flex justify-content-center"
+    controllerContentContainer.appendChild(camCol)
+
+    // Create element for placing camera
+    let camElement = document.createElement("div")
+    camElement.className = "camera"
+    camCol.appendChild(camElement)
+
+    startCam(camElement)
+
+    function checkScanState() {
+        setTimeout(function(){
+            console.log(1)
+            if (doneScanning === true) {
+                console.log("Ayeee, we're done scanning")
+                stepTitles[1].textContent = "-Done scanning the cube-"
+
+                camElement.remove()
+                if (nextCamButton) {
+                    nextCamButton.remove()
+                }
+
+                let nextStepButton = undefined
+                createButton("Next Step", 'localStorage.currentStep = 2; checkStep()',(button)=>{
+                    console.log(button)
+                    nextStepButton = button
+                })
+
+                controllerButtonsContainer.appendChild(nextStepButton)
+            }
+            else {
+                console.log(2)
+                if (editMode) {
+                    console.log(3)
+                    if (nextCamButton === undefined) {
+                        console.log(4)
+                        createButton("Next Cube Face", 'controllerButtonsContainer.removeChild(controllerButtonsContainer.firstChild); nextCamButton = undefined; next()',(button)=>{
+                            console.log(button)
+                            nextCamButton = button
+                        })
+
+                        controllerButtonsContainer.appendChild(nextCamButton)
+                    }
+                }
+                console.log(5)
+                checkScanState()
+            }
+
+        }, 1000)
+    }
+    checkScanState()
+}
 
 
 function createButton(text, action, cb, secondClassName="btn-primary") {

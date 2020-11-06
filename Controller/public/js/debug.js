@@ -3,6 +3,8 @@ let debug = localStorage.debug
 let switcher = document.getElementsByClassName("modeSwitch")[0]
 switcher.onclick = function() { (debug === "true") ? setDebug("false") : setDebug("true"); location.reload() }
 
+let oldCubeCanvas = document.createElement("canvas")
+
 if (debug) {
     if (debug === "true") {
         console.log("Debug mode enabled")
@@ -90,7 +92,6 @@ if (debug) {
 
 
         // Oldcube
-        let oldCubeCanvas = document.createElement("canvas")
         oldCubeCanvas.className = "oldCubeCanvas mt-1"
 
         row1.appendChild(cubeStateInfoField)
