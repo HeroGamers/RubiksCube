@@ -153,6 +153,9 @@ io.on('connection', (socket) => {
 	socket.on("Stop", () => {
 		send("Stop", "Stop")
 	})
+	socket.on("cubeAsString", (cubeAsString)=>{
+
+	})
 });
 
 wss.on('connection', function connection(ws) {

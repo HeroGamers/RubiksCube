@@ -255,15 +255,17 @@ function autoScan() {
 	})
 	var checker = []
 	for (var i = 0; i < colorCheck.length; i++) {
-		if (!allEqual(colorCheck[i].color)) {
-			checker.push(0)
-		} else {
-			checker.push(1)
-		}
-		if (arrayAverage(colorCheck[i].averageBestScore) > 100) {
-			checker.push(0)
-		} else {
-			checker.push(1)
+		if (i != 4) {
+			if (!allEqual(colorCheck[i].color)) {
+				checker.push(0)
+			} else {
+				checker.push(1)
+			}
+			if (arrayAverage(colorCheck[i].averageBestScore) > 100) {
+				checker.push(0)
+			} else {
+				checker.push(1)
+			}
 		}
 	}
 	if (!checker.includes(0)) {
@@ -309,9 +311,14 @@ function next() {
 		orange: "L",
 		blue: "B",
 	}
-	currentFaceColors.forEach((color) => {
-		cubeAsString += translator[color]
-	})
+	for (var i = 0; i < currentFaceColors.length; i++) {
+		if (i != 4) {
+			cubeAsString += translator[currentFaceColors[i]]
+		} else {
+			cubeAsString += translator[face[scanningSide]]
+		}
+	}
+
 	if (scanningSide != 5) {
 		scanningSide++
 		startCamStream()
