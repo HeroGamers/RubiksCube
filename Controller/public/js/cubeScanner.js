@@ -216,19 +216,11 @@ function scan() {
 	// 	//console.log(res)
 	// }, "color")
 
-<<<<<<< HEAD
-	if (autoScanMem.length == 10) {
-		autoScan()
-		autoScanMem.shift()
-	}
-	if (autoScanMem.length <= 10) {
-=======
-	if (autoScanMem.length == memLength) {
+	if (autoScanMem.length === memLength) {
 		autoScan()
 		autoScanMem.shift()
 	}
 	if (autoScanMem.length <= memLength) {
->>>>>>> origin/master
 		autoScanMem.push(scanData)
 	}
 
@@ -282,11 +274,7 @@ function autoScan() {
 			} else {
 				checker.push(1)
 			}
-<<<<<<< HEAD
-			if (arrayAverage(colorCheck[i].averageBestScore) > 31) {
-=======
 			if (arrayAverage(colorCheck[i].averageBestScore) > tolerance) {
->>>>>>> origin/master
 				checker.push(0)
 			} else {
 				checker.push(1)
@@ -348,13 +336,10 @@ function next() {
 		scanningSide++
 		startCamStream()
 	} else {
-<<<<<<< HEAD
 		socket.emit("cubeAsString", cubeAsString)
-=======
-		console.log("Done scanning")
-		console.log(cubeAsString)
+		// console.log("Done scanning")
+		// console.log(cubeAsString)
 		doneScanning = true
->>>>>>> origin/master
 	}
 }
 
