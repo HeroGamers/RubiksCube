@@ -396,6 +396,10 @@ function scanner(cubeSquare) {
 
 //funktion som tegner et grid på canvas'et som gør det nemmere at placere kameraet rigtigt
 function drawCubeGrid(currentFaceColor) {
+	scannerCanvas.style.borderTop = `10px solid ${borderColors[scanningSide].top}`
+	scannerCanvas.style.borderBottom = `10px solid ${borderColors[scanningSide].bottom}`
+	scannerCanvas.style.borderLeft = `10px solid ${borderColors[scanningSide].left}`
+	scannerCanvas.style.borderRight = `10px solid ${borderColors[scanningSide].right}`
 	scannerContext.fillStyle = currentFaceColor; //skifter farven til at være "currentFaceColor"
 	scannerContext.fillRect(gridWidth * 2 + squareSize, gridWidth * 2 + squareSize, squareSize, squareSize) //tegner firkanten i midten af cube'en
 
