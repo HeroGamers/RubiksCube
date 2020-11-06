@@ -496,8 +496,8 @@ function startCamStream() {
 				console.log("Bruger front camera")
 				camMode.video = true
 
-				// startCamStream();
-				alert("Please use a device with a back camera, like a phone")
+				startCamStream();
+				// alert("Please use a device with a back camera, like a phone")
 				break;
 			case "NotAllowedError":
 				console.log("Sagde nej til camera")

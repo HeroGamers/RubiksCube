@@ -259,7 +259,12 @@ function doCamera() {
                     }
                 }
                 else {
-                    textInformation.textContent = ""
+                    if (camMode.video !== null && camMode.video !== undefined && camMode.video === true) {
+                        textInformation.textContent = "Looks like you're using a front camera, which is flipped. Please take this into consideration."
+                    }
+                    else {
+                        textInformation.textContent = ""
+                    }
                 }
                 checkScanState()
             }
