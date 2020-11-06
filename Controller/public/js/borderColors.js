@@ -16,8 +16,8 @@ var borderColors = [{
 },{
 	top: "green",
 	bottom: "blue",
-	left: "red",
-	right: "orange"
+	left: "orange",
+	right: "red"
 },{
 	top: "white",
 	bottom: "yellow",
