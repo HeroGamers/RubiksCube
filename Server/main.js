@@ -2,7 +2,7 @@ const Cube = require('cubejs');
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-const cube = new Cube();
+var cube = new Cube();
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({
 	port: 8080
