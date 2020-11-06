@@ -201,6 +201,36 @@ function startCam(element=null) {
 		if (editMode)
 			cubeEditor()
 	}
+	// function initializeCam() {
+	// 	setTimeout(function() {
+	// 		if (video.srcObject) {
+	// 			scannerContext.drawImage(video, 0, 0);
+	//
+	// 			console.log(video.videoWidth)
+	// 			if (video.videoWidth !== 0) {
+	// 				if (camMode.video) {
+	// 					console.log("Initialize cam - using front camera")
+	// 					// flip cam
+	// 					console.log("aaa")
+	// 					scannerContext.translate(video.videoWidth, 0);
+	// 					scannerContext.scale(-1, 1);
+	// 				}
+	//
+	// 				console.log("Start snappin'")
+	// 				setInterval(snap, 10);
+	// 			}
+	// 			else {
+	// 				initializeCam()
+	// 			}
+	// 		}
+	// 		else {
+	// 			initializeCam();
+	// 		}
+	// 	}, 10);
+	// }
+	//
+	// initializeCam()
+
 	setInterval(snap, 10);
 	startCamStream()
 }
@@ -454,11 +484,17 @@ function startCamStream() {
 		videoTrack = stream.getVideoTracks()[0];
 
 		video.srcObject = stream;
+
+		console.log("Got stream")
 	}).catch((e) => {
 		switch (e.name) {
 			case "OverconstrainedError":
+				console.log("Bruger front camera")
 				camMode.video = true
-				startCamStream()
+
+				// startCamStream();
+				alert("Please use a device with a back camera, like a phone")
+				break;
 			case "NotAllowedError":
 				console.log("Sagde nej til camera")
 				break;

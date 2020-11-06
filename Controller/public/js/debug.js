@@ -78,6 +78,16 @@ if (debug) {
         stopButton.textContent = "Stop Robot"
         stopButton.onclick = function(){Stop()}
 
+        // Reset button
+        let resetButton = document.createElement("button")
+        resetButton.className = "btn btn-secondary resetButton m-2"
+        resetButton.type = "button"
+        resetButton.textContent = "Reset Everything"
+        resetButton.onclick = function(){
+            localStorage.clear()
+            location.reload()
+        }
+
         // Step buttons
         const steps = [0, 1, 2, 3]
         for (let step of steps) {
@@ -100,6 +110,7 @@ if (debug) {
         col1.appendChild(scrambleButton)
         col1.appendChild(solveButton)
         col1.appendChild(stopButton)
+        col1.appendChild(resetButton)
         col2.appendChild(oldCubeCanvas)
 
         // Import of old index - sendmoves function
