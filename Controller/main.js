@@ -98,6 +98,32 @@ app.get('/', (req, res) => {
     res.render('index', {  })
 })
 
+app.post('/colors', (req, res) => {
+    var db = JSON.parse(String(fs.readFileSync('db.json')))
+    matchColors = {};
+    Object.keys(db).forEach((color) => {
+        var pixels = {
+            r:[],
+            g:[],
+            b:[],
+            a:[]
+        }
+        db[color].forEach((pixel)=>{
+            pixels.r.push(pixel.r)
+            pixels.g.push(pixel.g)
+            pixels.b.push(pixel.b)
+            pixels.a.push(pixel.a)
+        })
+        matchColors[color]={
+            r:arrayAverage(pixels.r),
+            g:arrayAverage(pixels.g),
+            b:arrayAverage(pixels.b),
+            a:arrayAverage(pixels.a)
+        }
+    })
+    res.send(matchColors)
+});
+
 // Start server
 // Http and https
 https_server = https.createServer(credentials, app)
@@ -187,4 +213,12 @@ function checkSass() {
             }
         })
     }
+}
+
+function arrayAverage(pixelArray) {
+    //accumulatoren er et variable man kan ændre på hver gang som den tager med videre til næste "tur"
+    //currentArrayValue den nuværende værdi i arrayet
+
+    //et "loop" der pludser den nuværende værdi i array'et til accumulatoren og til sidst dividere med længden af array'et
+    return pixelArray.reduce((accumulator, currentArrayValue) => accumulator + currentArrayValue) / pixelArray.length;
 }

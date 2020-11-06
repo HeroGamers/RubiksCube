@@ -56,7 +56,7 @@ function checkStep() {
             stepTitles[1].textContent = "-Time to scan the cube-"
 
             let scanButton = undefined
-            createButton("Open my camera", "localStorage.currentStep = 2; checkStep()",(button)=>{
+            createButton("Open my camera", "startCam()",(button)=>{
                 console.log(button)
                 scanButton = button
             })
