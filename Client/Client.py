@@ -134,41 +134,52 @@ async def run(moves, websocket=None):
 
 async def websocketlistener():
     log("Starting listener...")
-    async with websockets.connect(ws_uri) as websocket:
-        # Loop this
-        while True:
-            # Look for a response
-            try:
-                res = await websocket.recv()
-                if res:
-                    logDebug(res)
-                    res_json = None
+    # Loop the connection itself
+    while True:
+        try:  # Try to catch if it fails connecting instead of throwing error
+            async with websockets.connect(ws_uri) as websocket:
+                log("Connected!")
+                # Loop this
+                while True:
+                    # Look for a response
                     try:
-                        res_json = json.loads(res)
+                        res = await websocket.recv()
+                        if res:
+                            logDebug(res)
+                            res_json = None
+                            try:
+                                res_json = json.loads(res)
+                            except Exception as e:
+                                logDebug("The response received is not JSON")
+                            if res_json:
+                                logDebug(res_json)
+                                if 'messagecode' in res_json:
+                                    messagecode = res_json['messagecode']
+                                    if "stop" in messagecode.lower():
+                                        global stop
+                                        stop = True
+                                    elif "moves" in messagecode.lower():
+                                        if not running:
+                                            moves = res_json['data']
+                                            logDebug("Moves received - " + moves)
+                                            log("Running...")
+                                            try:
+                                                asyncio.ensure_future(run(moves))  # Do moves, but continue with other stuff
+                                            except Exception as e:
+                                                log("Error while doing moves! - " + str(e))
+                                        else:
+                                            log("Cannot do moves when running!")
+                                            await websocket.send("Cannot do moves while running!")
                     except Exception as e:
-                        logDebug("The response received is not JSON")
-                    if res_json:
-                        logDebug(res_json)
-                        if 'messagecode' in res_json:
-                            messagecode = res_json['messagecode']
-                            if "stop" in messagecode.lower():
-                                global stop
-                                stop = True
-                            elif "moves" in messagecode.lower():
-                                if not running:
-                                    moves = res_json['data']
-                                    logDebug("Moves received - " + moves)
-                                    log("Running...")
-                                    try:
-                                        asyncio.ensure_future(run(moves, websocket))  # Do moves, but continue with other stuff
-                                    except Exception as e:
-                                        log("Error while doing moves! - " + str(e))
-                                else:
-                                    log("Cannot do moves when running!")
-                                    await websocket.send("Cannot do moves while running!")
-            except Exception as e:
-                log("Error while receiving response from websocket! - " + str(e))
+                        log("Error while receiving response from websocket! - " + str(e))
+                        if "code = 1006 (connection closed abnormally [internal]), no reason" in str(e):
+                            break
+                log("Loop broken")
+                await websocket.close()
+                log("Websocket connection closed")
+        except Exception as e:
+            log("Error while running websocket! - " + str(e))
+        await asyncio.sleep(10)
 
 # Start the Websocket Listener
 asyncio.get_event_loop().run_until_complete(websocketlistener())
-asyncio.get_event_loop().run_forever()

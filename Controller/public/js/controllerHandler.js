@@ -69,18 +69,7 @@ function checkStep() {
             let cubeState = localStorage.cubeState
 
             stepTitles[0].textContent = "Step 2"
-            if (cubeState !== "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB") {
-                stepTitles[1].textContent = "-That seems quite difficult to solve.. Want to see the robot do it though?-"
-
-                let solveButton = undefined
-                createButton("Solve the Rubik's Cube", "solve(); localStorage.currentStep = 3; checkStep()",(button)=>{
-                    console.log(button)
-                    solveButton = button
-                })
-
-                controllerButtonsContainer.appendChild(solveButton)
-            }
-            else {
+            if (cubeState === "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB") {
                 stepTitles[1].textContent = "-Cube Solved-"
                 textInformation.textContent = "Your cube is currently solved! Click the button to go back to Step 1 and scan again."
 
@@ -91,6 +80,30 @@ function checkStep() {
                 })
 
                 controllerButtonsContainer.appendChild(backButton)
+            }
+            else if ((cubeState.match(/U/g)||[]).length !== 9 || (cubeState.match(/R/g)||[]).length !== 9 || (cubeState.match(/F/g)||[]).length !== 9 || (cubeState.match(/D/g)||[]).length !== 9 || (cubeState.match(/L/g)||[]).length !== 9 || (cubeState.match(/B/g)||[]).length !== 9) {
+                console.log("Cube state is not valid")
+                stepTitles[1].textContent = "-Cube State Invalid-"
+                textInformation.textContent = "Your currently scanned cube doesn't seem to be possible, please redo the scan. Make sure to align your cube with the color outlines during the scan to ensure a good scan."
+
+                let backButton = undefined
+                createButton("Back to Step 1", "localStorage.currentStep = 1; checkStep()",(button)=>{
+                    console.log(button)
+                    backButton = button
+                })
+
+                controllerButtonsContainer.appendChild(backButton)
+            }
+            else {
+                stepTitles[1].textContent = "-That seems quite difficult to solve.. Want to see the robot do it though?-"
+
+                let solveButton = undefined
+                createButton("Solve the Rubik's Cube", "solve(); localStorage.currentStep = 3; checkStep()",(button)=>{
+                    console.log(button)
+                    solveButton = button
+                })
+
+                controllerButtonsContainer.appendChild(solveButton)
             }
             break
         case "3":
@@ -218,6 +231,7 @@ function doCamera() {
             if (doneScanning === true) {
                 console.log("Ayeee, we're done scanning")
                 stepTitles[1].textContent = "-Done scanning the cube-"
+                textInformation.textContent = ""
 
                 camElement.remove()
                 if (nextCamButton) {
@@ -235,12 +249,21 @@ function doCamera() {
             else {
                 if (editMode) {
                     if (nextCamButton === undefined) {
+                        textInformation.textContent = "You can click the colors to change them if they're wrong."
                         createButton("Next Cube Face", 'controllerButtonsContainer.removeChild(controllerButtonsContainer.firstChild); nextCamButton = undefined; next()',(button)=>{
                             console.log(button)
                             nextCamButton = button
                         })
 
                         controllerButtonsContainer.appendChild(nextCamButton)
+                    }
+                }
+                else {
+                    if (camMode.video !== null && camMode.video !== undefined && camMode.video === true) {
+                        textInformation.textContent = "Looks like you're using a front camera, which is flipped. Please take this into consideration."
+                    }
+                    else {
+                        textInformation.textContent = ""
                     }
                 }
                 checkScanState()
