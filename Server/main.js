@@ -28,7 +28,7 @@ var results = [];
 // console.log("used scramble:", Cube.inverse(solution))
 
 function Solve() {
-	console.time("SolveCalcTime")
+	solution = ""
 	EdgeSwap()
 }
 
@@ -145,7 +145,12 @@ io.on('connection', (socket) => {
 		io.emit("cubeState", cube.asString())
 	});
 	socket.on("Solve", (a) => {
-		Solve()
+		try{
+			Solve()
+		}catch(err){
+			console.log("fuckoff", err)
+			Scramble()
+		}
 	})
 	socket.on("Scramble", () => {
 		Scramble()
@@ -153,7 +158,7 @@ io.on('connection', (socket) => {
 	socket.on("Stop", () => {
 		send("Stop", "Stop")
 	})
-	socket.on("cubeAsString", (cubeAsString)=>{
+	socket.on("cubeAsString", (cubeAsString) => {
 		cube = Cube.fromString(cubeAsString)
 		io.emit("cubeState", cube.asString())
 	})
@@ -173,7 +178,10 @@ function send(messagecode, message) {
 			// var = wssolution={};
 			// wssolution[messagecode]=message;
 			// client.send(wssolution)
-			client.send(JSON.stringify({"messagecode": messagecode, "data": message}))
+			client.send(JSON.stringify({
+				"messagecode": messagecode,
+				"data": message
+			}))
 		}
 	});
 }
@@ -243,6 +251,7 @@ function CornerSwap() {
 		1: 0,
 		2: 1,
 	}
+
 	var SetupMove = SetupMoves.Corner[cube.toJSON().cp[5]][oriantion[cube.toJSON().co[5]]]
 	if (cube.toJSON().cp[5] == 5) {
 		var Piece = UnSolvedCornerPiece()
@@ -257,11 +266,7 @@ function CornerSwap() {
 			cube.move(Cube.inverse(solution))
 			io.emit("cubeState", cube.asString())
 			io.emit("Done", solution)
-			send("SolveMoves",solution)
-			console.log(solution)
-			console.timeEnd("SolveCalcTime")
-			console.log(solution.split(" ").length)
-
+			send("SolveMoves", solution)
 			// results.push(solution.split(" ").length)
 			// var sum = 0
 			// for (var i = 0; i < results.length; i++) {
@@ -278,6 +283,7 @@ function CornerSwap() {
 		solution = solution + SetupMove + alg + Cube.inverse(SetupMove) + " "
 		CornerSwap()
 	}
+
 }
 
 //io.emit("cubeState", cube.asString())
