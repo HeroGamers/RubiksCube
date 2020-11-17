@@ -89,7 +89,7 @@ async def run(moves, websocket=None):
     log("Moving move stepper...")
     SF.MoveStepper.on()
     SF.MoveStepper.set_direction("RIGHT")
-    SF.MoveStepper.move(moveStepperDegrees)
+    SF.MoveStepper.move(moveStepperDegrees, acceleration=1)
     log("Done moving the move stepper!")
 
     # Turn all drives on
@@ -118,7 +118,7 @@ async def run(moves, websocket=None):
 
     log("Moving the move stepper... Please wait...")
     SF.MoveStepper.set_direction("LEFT")
-    SF.MoveStepper.move(moveStepperDegrees)
+    SF.MoveStepper.move(moveStepperDegrees, acceleration=1)
     # Turn all off
     SF.turnAllOff()
     log("Done moving the move stepper, feel free to pull out cube!")
