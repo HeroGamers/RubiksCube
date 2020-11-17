@@ -1,12 +1,33 @@
 from gpiozero import DigitalOutputDevice
 from time import sleep
-import asyncio
 
 # Unchangeable variables
 stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
 microSteps = 1  # The amount of microsteps the stepper takes
 pulsesPerRotation = int(360/stepAngle*microSteps)  # 360 degrees
-pulseDelay = 450  # The delay between HIGH and LOW, in microseconds
+frequency = 0  # The frequency between each pulse, in kHz, max for driver is 20 kHz
+pulseDelay = 0  # The delay between each pulse, in seconds
+stepDelay = 20  # The delay between each pulse cycle / steps - in microseconds
+rotationsPerMinute = 0  # Calculate RPM
+
+
+def setPulseDelay(rpm=None, kHz=None):
+    global rotationsPerMinute
+    global frequency
+    global pulseDelay
+    if rpm:
+        rotationsPerMinute = rpm
+        frequency = (rotationsPerMinute/((stepAngle/360)*60))/1000  # Frequency in kHz
+        pulseDelay = 1/(frequency*1000)
+    elif kHz:
+        frequency = kHz
+        pulseDelay = 1/(frequency*1000)  # The delay between each pulse, in seconds
+        rotationsPerMinute = stepAngle/360*(frequency*1000)*60  # Calculate RPM
+    print("Current RPM: " + str(rotationsPerMinute) + " - Current frequency: " + str(frequency) + " kHz")
+
+
+# Get the pulse delay, using either frequency or rpm - max kHz is 20 for driver
+setPulseDelay(kHz=20)
 
 
 class Stepper:
@@ -41,9 +62,10 @@ class Stepper:
         # Don't make the sleep async, the delay on the sleep in async is too slow, and gets weird
         for degree in range(int(round(pulsesPerRotation/360*degrees))):
             self.stepper.on()
-            sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
+            sleep(pulseDelay)
             self.stepper.off()
-            sleep(pulseDelay*10**(-6))  # Convert the pulseDelay from microseconds to seconds
+
+            sleep(stepDelay*(10**(-6)))
 
     # Function to turn on the stepper
     def on(self):
