@@ -67,6 +67,8 @@ class Stepper:
             # Speed calculation
             if current_rpm+acceleration < max_rpm:
                 current_rpm = current_rpm+acceleration
+            else:
+                current_rpm = max_rpm
 
             current_frequency = (current_rpm / ((stepAngle / 360) * 60))  # Frequency in Hz
 
@@ -77,7 +79,7 @@ class Stepper:
 
             sleep(1/current_frequency)
 
-            print("Step " + str(degree) + " - RPM: " + str(current_rpm) + " | " + str(current_frequency/1000) + " kHz")
+            print("Step " + str(degree) + " - RPM: " + str(current_rpm) + " | " + str(round(current_frequency/1000, 2)) + " kHz")
 
     # Function to turn on the stepper
     def on(self):
