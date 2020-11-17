@@ -59,13 +59,25 @@ class Stepper:
 
     # Function to move a motor a certain amount of degrees
     def move(self, degrees):
+        current_rpm = 200
+        max_rpm = 600
+        acceleration = 20
         # Don't make the sleep async, the delay on the sleep in async is too slow, and gets weird
         for degree in range(int(round(pulsesPerRotation/360*degrees))):
+            # Speed calculation
+            if current_rpm+acceleration < max_rpm:
+                current_rpm = current_rpm+acceleration
+
+            current_frequency = (current_rpm / ((stepAngle / 360) * 60))  # Frequency in Hz
+
+            # Do the step
             self.stepper.on()
             sleep(pulseDelay)
             self.stepper.off()
 
-            sleep(stepDelay*(10**(-6)))
+            sleep(1/current_frequency)
+
+            print("Step " + str(degree) + " - RPM: " + str(current_rpm) + " | " + str(current_frequency/1000) + " kHz")
 
     # Function to turn on the stepper
     def on(self):
