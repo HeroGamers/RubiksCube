@@ -5,29 +5,8 @@ from time import sleep
 stepAngle = 1.8  # The step angle of the stepper motor, ours is 1.8 degrees
 microSteps = 1  # The amount of microsteps the stepper takes
 pulsesPerRotation = int(360/stepAngle*microSteps)  # 360 degrees
-frequency = 0  # The frequency between each pulse, in kHz, max for driver is 20 kHz
-pulseDelay = 0  # The delay between each pulse, in seconds
-stepDelay = 20  # The delay between each pulse cycle / steps - in microseconds
-rotationsPerMinute = 0  # Calculate RPM
-
-
-def setPulseDelay(rpm=None, kHz=None):
-    global rotationsPerMinute
-    global frequency
-    global pulseDelay
-    if rpm:
-        rotationsPerMinute = rpm
-        frequency = (rotationsPerMinute/((stepAngle/360)*60))/1000  # Frequency in kHz
-        pulseDelay = 1/(frequency*1000)
-    elif kHz:
-        frequency = kHz
-        pulseDelay = 1/(frequency*1000)  # The delay between each pulse, in seconds
-        rotationsPerMinute = stepAngle/360*(frequency*1000)*60  # Calculate RPM
-    print("Current RPM: " + str(rotationsPerMinute) + " - Current frequency: " + str(frequency) + " kHz")
-
-
-# Get the pulse delay, using either frequency or rpm - max kHz is 20 for driver
-setPulseDelay(kHz=20)
+pulseFrequency = 20  # The frequency between each pulse, in kHz, max for driver is 20 kHz
+pulseDelay = 1/(pulseFrequency*1000)  # The delay between each pulse, in seconds
 
 
 class Stepper:
@@ -64,22 +43,23 @@ class Stepper:
         acceleration = 20
         # Don't make the sleep async, the delay on the sleep in async is too slow, and gets weird
         for degree in range(int(round(pulsesPerRotation/360*degrees))):
-            # Speed calculation
-            if current_rpm+acceleration < max_rpm:
-                current_rpm = current_rpm+acceleration
-            else:
-                current_rpm = max_rpm
-
+            # Frequency calculation
             current_frequency = (current_rpm / ((stepAngle / 360) * 60))  # Frequency in Hz
 
             # Do the step
             self.stepper.on()
-            sleep(pulseDelay)
+            sleep(pulseDelay)  # The delay from startup - this is equivalent to 20 kHz, which is the max input for the driver
             self.stepper.off()
 
-            sleep(1/current_frequency)
+            sleep(1/current_frequency)  # The delay between each pulse cycle / steps
 
-            print("Step " + str(degree) + " - RPM: " + str(current_rpm) + " | " + str(round(current_frequency/1000, 2)) + " kHz")
+            print("Pulse " + str(degree+1) + "/" + str(int(round(pulsesPerRotation/360*degrees))) + " - RPM: " + str(current_rpm) + " | " + str(round(current_frequency/1000, 2)) + " kHz")
+
+            # New speed calculation
+            if current_rpm+acceleration < max_rpm:
+                current_rpm = current_rpm+acceleration
+            else:
+                current_rpm = max_rpm
 
     # Function to turn on the stepper
     def on(self):
